@@ -26,7 +26,7 @@ export function buildGraph(scene: Scene): CircuitGraph {
   for (const p of scene.parts) {
     switch (p.kind) {
       case 'battery':
-        // Terminals are not shorted here: the external loop must connect + to −.
+      case 'ac_supply':
         break;
       case 'bulb':
       case 'resistor':
@@ -50,6 +50,29 @@ export function buildGraph(scene: Scene): CircuitGraph {
             id: internalId(p.id, 'contact'),
             a,
             b,
+            kind: 'internal',
+            wireId: null,
+          });
+        }
+        break;
+      }
+      case 'breaker_2p': {
+        if (p.breakerOn) {
+          const lIn = makePinId(p.id, 'l_in');
+          const lOut = makePinId(p.id, 'l_out');
+          const nIn = makePinId(p.id, 'n_in');
+          const nOut = makePinId(p.id, 'n_out');
+          edges.push({
+            id: internalId(p.id, 'l_conn'),
+            a: lIn,
+            b: lOut,
+            kind: 'internal',
+            wireId: null,
+          });
+          edges.push({
+            id: internalId(p.id, 'n_conn'),
+            a: nIn,
+            b: nOut,
             kind: 'internal',
             wireId: null,
           });

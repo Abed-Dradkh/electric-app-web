@@ -37,6 +37,61 @@ describe('simulate Phase A', () => {
     );
   });
 
+  it('detects AC L–N loop through breaker, switch, and lamp', () => {
+    let s = initialScene();
+    s = sceneReducer(s, { type: 'addPart', kind: 'ac_supply', x: 80, y: 200 });
+    s = sceneReducer(s, { type: 'addPart', kind: 'breaker_2p', x: 200, y: 200 });
+    s = sceneReducer(s, { type: 'addPart', kind: 'switch', x: 320, y: 200 });
+    s = sceneReducer(s, { type: 'addPart', kind: 'bulb', x: 460, y: 200 });
+    const ac = s.parts[0]!;
+    const br = s.parts[1]!;
+    const sw = s.parts[2]!;
+    const bulb = s.parts[3]!;
+    s = sceneReducer(s, { type: 'beginWire', pin: makePinId(ac.id, 'l') });
+    s = sceneReducer(s, { type: 'completeWire', pin: makePinId(br.id, 'l_in') });
+    s = sceneReducer(s, { type: 'beginWire', pin: makePinId(br.id, 'l_out') });
+    s = sceneReducer(s, { type: 'completeWire', pin: makePinId(sw.id, 'a') });
+    s = sceneReducer(s, { type: 'beginWire', pin: makePinId(sw.id, 'b') });
+    s = sceneReducer(s, { type: 'completeWire', pin: makePinId(bulb.id, 'a') });
+    s = sceneReducer(s, { type: 'beginWire', pin: makePinId(bulb.id, 'b') });
+    s = sceneReducer(s, { type: 'completeWire', pin: makePinId(br.id, 'n_out') });
+    s = sceneReducer(s, { type: 'beginWire', pin: makePinId(br.id, 'n_in') });
+    s = sceneReducer(s, { type: 'completeWire', pin: makePinId(ac.id, 'n') });
+    s = sceneReducer(s, { type: 'toggleSwitch', partId: sw.id });
+    const wids = s.wires.map((w) => w.id);
+    const r = simulate(s, { testActive: true, supplyKind: 'ac' });
+    expect(r.isCompleteLoop).toBe(true);
+    expect(wids.every((id) => r.energizedWireIds.has(wireId(id)))).toBe(
+      true,
+    );
+  });
+
+  it('breaks AC loop when 2-pole breaker is off', () => {
+    let s = initialScene();
+    s = sceneReducer(s, { type: 'addPart', kind: 'ac_supply', x: 80, y: 200 });
+    s = sceneReducer(s, { type: 'addPart', kind: 'breaker_2p', x: 200, y: 200 });
+    s = sceneReducer(s, { type: 'addPart', kind: 'switch', x: 320, y: 200 });
+    s = sceneReducer(s, { type: 'addPart', kind: 'bulb', x: 460, y: 200 });
+    const ac = s.parts[0]!;
+    const br = s.parts[1]!;
+    const sw = s.parts[2]!;
+    const bulb = s.parts[3]!;
+    s = sceneReducer(s, { type: 'toggleBreaker', partId: br.id });
+    s = sceneReducer(s, { type: 'beginWire', pin: makePinId(ac.id, 'l') });
+    s = sceneReducer(s, { type: 'completeWire', pin: makePinId(br.id, 'l_in') });
+    s = sceneReducer(s, { type: 'beginWire', pin: makePinId(br.id, 'l_out') });
+    s = sceneReducer(s, { type: 'completeWire', pin: makePinId(sw.id, 'a') });
+    s = sceneReducer(s, { type: 'beginWire', pin: makePinId(sw.id, 'b') });
+    s = sceneReducer(s, { type: 'completeWire', pin: makePinId(bulb.id, 'a') });
+    s = sceneReducer(s, { type: 'beginWire', pin: makePinId(bulb.id, 'b') });
+    s = sceneReducer(s, { type: 'completeWire', pin: makePinId(br.id, 'n_out') });
+    s = sceneReducer(s, { type: 'beginWire', pin: makePinId(br.id, 'n_in') });
+    s = sceneReducer(s, { type: 'completeWire', pin: makePinId(ac.id, 'n') });
+    const r = simulate(s, { testActive: true, supplyKind: 'ac' });
+    expect(r.isCompleteLoop).toBe(false);
+    expect(r.energizedWireIds.size).toBe(0);
+  });
+
   it('breaks the loop when switch is open', () => {
     let s = initialScene();
     s = sceneReducer(s, { type: 'addPart', kind: 'battery', x: 80, y: 200 });
@@ -45,7 +100,6 @@ describe('simulate Phase A', () => {
     const bat = s.parts[0]!;
     const sw = s.parts[1]!;
     const bulb = s.parts[2]!;
-    s = sceneReducer(s, { type: 'toggleSwitch', partId: sw.id });
     s = sceneReducer(s, { type: 'beginWire', pin: makePinId(bat.id, 'positive') });
     s = sceneReducer(s, { type: 'completeWire', pin: makePinId(sw.id, 'a') });
     s = sceneReducer(s, { type: 'beginWire', pin: makePinId(sw.id, 'b') });

@@ -1,3 +1,4 @@
+import type { SupplyKind } from '../../model/supplyKind';
 import type { Scene } from '../../model/types';
 import type { WireId } from '../../model/ids';
 import { pinWorldPosition } from '../../model/pinLayout';
@@ -7,6 +8,7 @@ export type WireLayerProps = {
   readonly energizedWireIds: ReadonlySet<WireId>;
   readonly testActive: boolean;
   readonly reducedMotion: boolean;
+  readonly supplyKind: SupplyKind;
 };
 
 function wirePath(x1: number, y1: number, x2: number, y2: number): string {
@@ -25,9 +27,12 @@ export function WireLayer({
   energizedWireIds,
   testActive,
   reducedMotion,
+  supplyKind,
 }: WireLayerProps) {
+  const layerClass =
+    supplyKind === 'ac' ? 'wire-layer wire-layer--ac' : 'wire-layer';
   return (
-    <g className="wire-layer" aria-hidden>
+    <g className={layerClass} aria-hidden>
       {scene.wires.map((w) => {
         const a = pinWorldPosition(scene, w.pinA);
         const b = pinWorldPosition(scene, w.pinB);

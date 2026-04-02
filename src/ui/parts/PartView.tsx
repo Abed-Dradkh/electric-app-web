@@ -1,6 +1,11 @@
 import type { MouseEvent, PointerEvent } from 'react';
 import type { PinId } from '../../model/ids';
-import { PIN_ROLES, makePinId, pinOffset } from '../../model/pinLayout';
+import {
+  PIN_ROLES,
+  makePinId,
+  pinOffset,
+  type PinRole,
+} from '../../model/pinLayout';
 import type { Part } from '../../model/types';
 import type { PartSimHint } from '../../sim/types';
 import {
@@ -21,6 +26,7 @@ export type PartViewProps = {
   readonly onBodyPointerDown: (e: PointerEvent<SVGRectElement>) => void;
   readonly onRemove: () => void;
   readonly onToggleSwitch?: () => void;
+  readonly onToggleBreaker?: () => void;
   readonly onRotatePointerDown: (e: PointerEvent<HTMLButtonElement>) => void;
 };
 
@@ -41,6 +47,7 @@ export function PartView({
   onBodyPointerDown,
   onRemove,
   onToggleSwitch,
+  onToggleBreaker,
   onRotatePointerDown,
 }: PartViewProps) {
   const bar = partHoverBarBox(part.kind, hoverBarPosition);
@@ -48,8 +55,14 @@ export function PartView({
   const placementClass = `part-actions-inner--${hoverBarPosition}`;
   const roles = PIN_ROLES[part.kind];
   const label = labelForPart(part);
-  const loadOn = testActive && hint?.loadEnergized && part.kind !== 'battery';
-  const batOn = testActive && hint?.batterySupplying && part.kind === 'battery';
+  const isSupply =
+    part.kind === 'battery' || part.kind === 'ac_supply';
+  const loadOn =
+    testActive && hint?.loadEnergized && !isSupply;
+  const batOn =
+    testActive &&
+    hint?.batterySupplying &&
+    (part.kind === 'battery' || part.kind === 'ac_supply');
   const testIdle = testActive && !loadOn && !batOn;
 
   const partClasses = [
@@ -76,19 +89,18 @@ export function PartView({
             e.stopPropagation();
             onBodyPointerDown(e);
           }}
-          onDoubleClick={(e) => {
-            e.stopPropagation();
-            if (part.kind === 'switch' && onToggleSwitch) {
-              onToggleSwitch();
-            }
-          }}
         />
         <text className="part-label" x={0} y={6} textAnchor="middle">
           {label}
         </text>
         {part.kind === 'switch' ? (
           <text className="part-switch-state" x={0} y={22} textAnchor="middle">
-            {part.switchClosed ? 'Closed' : 'Open'}
+            {part.switchClosed ? 'On' : 'Off'}
+          </text>
+        ) : null}
+        {part.kind === 'breaker_2p' ? (
+          <text className="part-switch-state" x={0} y={22} textAnchor="middle">
+            {part.breakerOn ? 'On' : 'Off'}
           </text>
         ) : null}
         <foreignObject
@@ -102,7 +114,13 @@ export function PartView({
               {part.kind === 'switch' && onToggleSwitch ? (
                 <button
                   type="button"
-                  className="part-action-btn"
+                  className={[
+                    'part-action-btn',
+                    'part-action-btn--switch',
+                    part.switchClosed
+                      ? 'part-action-btn--switch-on'
+                      : 'part-action-btn--switch-off',
+                  ].join(' ')}
                   onPointerDown={stopPartDrag}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -111,11 +129,36 @@ export function PartView({
                   aria-pressed={part.switchClosed}
                   aria-label={
                     part.switchClosed
-                      ? 'Switch is closed. Click to open.'
-                      : 'Switch is open. Click to close.'
+                      ? 'Switch is on. Click to turn off.'
+                      : 'Switch is off. Click to turn on.'
                   }
                 >
-                  <SwitchToggleIcon closed={part.switchClosed} />
+                  {part.switchClosed ? 'On' : 'Off'}
+                </button>
+              ) : null}
+              {part.kind === 'breaker_2p' && onToggleBreaker ? (
+                <button
+                  type="button"
+                  className={[
+                    'part-action-btn',
+                    'part-action-btn--switch',
+                    part.breakerOn
+                      ? 'part-action-btn--switch-on'
+                      : 'part-action-btn--switch-off',
+                  ].join(' ')}
+                  onPointerDown={stopPartDrag}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleBreaker();
+                  }}
+                  aria-pressed={part.breakerOn}
+                  aria-label={
+                    part.breakerOn
+                      ? 'Breaker is on. Click to turn off.'
+                      : 'Breaker is off. Click to turn on.'
+                  }
+                >
+                  {part.breakerOn ? 'On' : 'Off'}
                 </button>
               ) : null}
               <button
@@ -203,46 +246,6 @@ function RotateIcon() {
   );
 }
 
-function SwitchToggleIcon({ closed }: { readonly closed: boolean }) {
-  return (
-    <svg
-      className="part-action-icon"
-      width={22}
-      height={22}
-      viewBox="0 0 24 24"
-      aria-hidden
-    >
-      {closed ? (
-        <>
-          <rect
-            x="2"
-            y="7"
-            width="20"
-            height="10"
-            rx="5"
-            fill="currentColor"
-            opacity="0.35"
-          />
-          <circle cx="15" cy="12" r="4" fill="currentColor" />
-        </>
-      ) : (
-        <>
-          <rect
-            x="2"
-            y="7"
-            width="20"
-            height="10"
-            rx="5"
-            fill="currentColor"
-            opacity="0.2"
-          />
-          <circle cx="9" cy="12" r="4" fill="currentColor" />
-        </>
-      )}
-    </svg>
-  );
-}
-
 function TrashIcon() {
   return (
     <svg
@@ -274,15 +277,33 @@ function labelForPart(part: Part): string {
       return 'LED';
     case 'switch':
       return 'Switch';
+    case 'ac_supply':
+      return 'AC supply';
+    case 'breaker_2p':
+      return 'Breaker';
   }
 }
 
-function pinAria(
-  kind: Part['kind'],
-  role: 'positive' | 'negative' | 'a' | 'b',
-): string {
+function pinAria(kind: Part['kind'], role: PinRole): string {
   if (kind === 'battery') {
     return role === 'positive' ? 'Positive terminal' : 'Negative terminal';
   }
-  return `Pin ${role.toUpperCase()}`;
+  if (kind === 'ac_supply') {
+    return role === 'l' ? 'Line (L)' : 'Neutral (N)';
+  }
+  if (kind === 'breaker_2p') {
+    switch (role) {
+      case 'l_in':
+        return 'Line in';
+      case 'n_in':
+        return 'Neutral in';
+      case 'l_out':
+        return 'Line out';
+      case 'n_out':
+        return 'Neutral out';
+      default:
+        return 'Pin';
+    }
+  }
+  return `Pin ${String(role).toUpperCase()}`;
 }

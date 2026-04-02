@@ -69,6 +69,26 @@ function SwitchGlyph() {
   );
 }
 
+function AcSupplyGlyph() {
+  return (
+    <svg {...iconProps} aria-hidden>
+      <path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0" />
+      <circle cx={7} cy={12} r={1.5} fill="currentColor" stroke="none" />
+      <circle cx={17} cy={12} r={1.5} fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function BreakerGlyph() {
+  return (
+    <svg {...iconProps} aria-hidden>
+      <rect x={5} y={6} width={14} height={12} rx={2} />
+      <path d="M9 10v4M15 10v4" />
+      <path d="M7 15h10" opacity={0.5} />
+    </svg>
+  );
+}
+
 export function PartKindGlyph({ kind }: { readonly kind: ComponentKind }) {
   switch (kind) {
     case 'battery':
@@ -81,5 +101,9 @@ export function PartKindGlyph({ kind }: { readonly kind: ComponentKind }) {
       return <LedGlyph />;
     case 'switch':
       return <SwitchGlyph />;
+    case 'ac_supply':
+      return <AcSupplyGlyph />;
+    case 'breaker_2p':
+      return <BreakerGlyph />;
   }
 }

@@ -1,4 +1,5 @@
 import type { PartId, WireId } from '../model/ids';
+import type { SupplyKind } from '../model/supplyKind';
 
 /** Per-component display hints for the view (Phase A). */
 export type PartSimHint = {
@@ -21,4 +22,6 @@ export type SimResult = {
 
 export type SimulateOptions = {
   readonly testActive: boolean;
+  /** Defaults to DC when omitted. AC uses the same Phase A model until AC sim exists. */
+  readonly supplyKind?: SupplyKind;
 };

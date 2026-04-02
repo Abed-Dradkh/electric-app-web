@@ -58,7 +58,7 @@ export function partHoverBarBox(
   position: PartHoverBarPosition,
 ): HoverBarBox {
   const base = PART_HOVER_BAR_BOX[position];
-  if (kind !== 'bulb') {
+  if (kind !== 'bulb' && kind !== 'breaker_2p') {
     return base;
   }
   const d = PART_HOVER_BAR_BULB_EXTRA_GAP;

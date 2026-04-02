@@ -1,7 +1,14 @@
 import type { PartId, PinId, WireId } from './ids';
 
 /** Kinds of components available in the workshop. */
-export type ComponentKind = 'battery' | 'bulb' | 'resistor' | 'led' | 'switch';
+export type ComponentKind =
+  | 'battery'
+  | 'bulb'
+  | 'resistor'
+  | 'led'
+  | 'switch'
+  | 'ac_supply'
+  | 'breaker_2p';
 
 /** A component instance on the board. */
 export type Part = {
@@ -14,6 +21,8 @@ export type Part = {
   readonly rotationDeg: number;
   /** Only meaningful when `kind === 'switch'`. */
   readonly switchClosed: boolean;
+  /** Only meaningful when `kind === 'breaker_2p'` — both poles conduct when true. */
+  readonly breakerOn: boolean;
 };
 
 /** User-drawn connection between two pins. */
@@ -40,6 +49,7 @@ export type SceneAction =
   | { type: 'movePart'; partId: PartId; x: number; y: number }
   | { type: 'setPartRotation'; partId: PartId; rotationDeg: number }
   | { type: 'toggleSwitch'; partId: PartId }
+  | { type: 'toggleBreaker'; partId: PartId }
   | { type: 'beginWire'; pin: PinId }
   | { type: 'completeWire'; pin: PinId }
   | { type: 'cancelWire' }

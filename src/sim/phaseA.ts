@@ -4,6 +4,7 @@ import { makePinId } from '../model/pinLayout';
 import type { Scene } from '../model/types';
 import type { PartId, PinId } from '../model/ids';
 import { partId } from '../model/ids';
+import type { SupplyKind } from '../model/supplyKind';
 import type { PartSimHint, SimResult, SimulateOptions } from './types';
 
 function neighborsFromEdges(
@@ -44,12 +45,12 @@ function bfsDist(
 
 function edgeOnShortestPath(
   e: GraphEdge,
-  distP: Map<PinId, number>,
-  distN: Map<PinId, number>,
+  distA: Map<PinId, number>,
+  distB: Map<PinId, number>,
   dTotal: number,
 ): boolean {
-  const du = (x: PinId) => distP.get(x);
-  const dv = (x: PinId) => distN.get(x);
+  const du = (x: PinId) => distA.get(x);
+  const dv = (x: PinId) => distB.get(x);
   const u = e.a;
   const v = e.b;
   const a1 = du(u);
@@ -70,38 +71,65 @@ function findBatteryPartId(scene: Scene): PartId | null {
   return b ? partId(b.id) : null;
 }
 
+function findAcSupplyPartId(scene: Scene): PartId | null {
+  const b = scene.parts.find((p) => p.kind === 'ac_supply');
+  return b ? partId(b.id) : null;
+}
+
 function internalEdgeForPart(
   p: Scene['parts'][number],
   edges: readonly GraphEdge[],
 ): GraphEdge | undefined {
-  const suffixes =
-    p.kind === 'battery' ? ['cell'] : ['body', 'contact'];
-  const ids = suffixes.map((s) => `int:${p.id}:${s}`);
-  return edges.find((e) => e.kind === 'internal' && ids.includes(e.id));
+  switch (p.kind) {
+    case 'battery':
+    case 'ac_supply':
+    case 'breaker_2p':
+      return undefined;
+    case 'bulb':
+    case 'resistor':
+    case 'led':
+      return edges.find((e) => e.id === `int:${p.id}:body`);
+    case 'switch':
+      return edges.find((e) => e.id === `int:${p.id}:contact`);
+  }
 }
 
 function buildPartHints(
   scene: Scene,
   loop: boolean,
   edges: readonly GraphEdge[],
-  distP: Map<PinId, number>,
-  distN: Map<PinId, number>,
+  distA: Map<PinId, number>,
+  distB: Map<PinId, number>,
   dTotal: number,
 ): Map<PartId, PartSimHint> {
   const m = new Map<PartId, PartSimHint>();
   for (const p of scene.parts) {
     const pid = partId(p.id);
-    if (p.kind === 'battery') {
+    if (p.kind === 'battery' || p.kind === 'ac_supply') {
       m.set(pid, { batterySupplying: loop, loadEnergized: false });
+      continue;
+    }
+    if (p.kind === 'breaker_2p') {
+      let load = false;
+      if (loop && p.breakerOn) {
+        const el = edges.find((e) => e.id === `int:${p.id}:l_conn`);
+        const en = edges.find((e) => e.id === `int:${p.id}:n_conn`);
+        if (
+          el &&
+          en &&
+          edgeOnShortestPath(el, distA, distB, dTotal) &&
+          edgeOnShortestPath(en, distA, distB, dTotal)
+        ) {
+          load = true;
+        }
+      }
+      m.set(pid, { batterySupplying: false, loadEnergized: load });
       continue;
     }
     let load = false;
     if (loop) {
       const internal = internalEdgeForPart(p, edges);
-      if (
-        internal &&
-        edgeOnShortestPath(internal, distP, distN, dTotal)
-      ) {
+      if (internal && edgeOnShortestPath(internal, distA, distB, dTotal)) {
         load = true;
       }
     }
@@ -121,20 +149,7 @@ function emptyHints(scene: Scene): Map<PartId, PartSimHint> {
   return m;
 }
 
-/**
- * Phase A: connectivity from battery + to −; energize wires on shortest paths.
- */
-export function simulate(scene: Scene, options: SimulateOptions): SimResult {
-  if (!options.testActive) {
-    return {
-      testActive: false,
-      isCompleteLoop: false,
-      energizedWireIds: new Set(),
-      partHints: emptyHints(scene),
-      statusMessage: 'Test is off. Turn on Test to check the circuit.',
-    };
-  }
-
+function simulateDc(scene: Scene): SimResult {
   const batteryPartId = findBatteryPartId(scene);
   if (batteryPartId === null) {
     return {
@@ -146,14 +161,14 @@ export function simulate(scene: Scene, options: SimulateOptions): SimResult {
     };
   }
 
-  const pos = makePinId(batteryPartId, 'positive');
-  const neg = makePinId(batteryPartId, 'negative');
+  const start = makePinId(batteryPartId, 'positive');
+  const end = makePinId(batteryPartId, 'negative');
   const graph = buildGraph(scene);
   const neighbors = neighborsFromEdges(graph.edges);
-  const distP = bfsDist(pos, neighbors);
-  const distN = bfsDist(neg, neighbors);
+  const distA = bfsDist(start, neighbors);
+  const distB = bfsDist(end, neighbors);
 
-  if (!distP.has(neg)) {
+  if (!distA.has(end)) {
     return {
       testActive: true,
       isCompleteLoop: false,
@@ -164,14 +179,14 @@ export function simulate(scene: Scene, options: SimulateOptions): SimResult {
     };
   }
 
-  const dTotal = distP.get(neg)!;
+  const dTotal = distA.get(end)!;
   const energizedWires = new Set(
     graph.edges
       .filter(
         (e) =>
           e.kind === 'wire' &&
           e.wireId !== null &&
-          edgeOnShortestPath(e, distP, distN, dTotal),
+          edgeOnShortestPath(e, distA, distB, dTotal),
       )
       .map((e) => e.wireId!),
   );
@@ -180,8 +195,8 @@ export function simulate(scene: Scene, options: SimulateOptions): SimResult {
     scene,
     true,
     graph.edges,
-    distP,
-    distN,
+    distA,
+    distB,
     dTotal,
   );
 
@@ -193,4 +208,88 @@ export function simulate(scene: Scene, options: SimulateOptions): SimResult {
     statusMessage:
       'Complete loop: conventional current flows from positive to negative.',
   };
+}
+
+function simulateAc(scene: Scene): SimResult {
+  const inletId = findAcSupplyPartId(scene);
+  if (inletId === null) {
+    return {
+      testActive: true,
+      isCompleteLoop: false,
+      energizedWireIds: new Set(),
+      partHints: emptyHints(scene),
+      statusMessage:
+        'Add an AC supply (L and N) to form a complete path from line to neutral.',
+    };
+  }
+
+  const start = makePinId(inletId, 'l');
+  const end = makePinId(inletId, 'n');
+  const graph = buildGraph(scene);
+  const neighbors = neighborsFromEdges(graph.edges);
+  const distA = bfsDist(start, neighbors);
+  const distB = bfsDist(end, neighbors);
+
+  if (!distA.has(end)) {
+    return {
+      testActive: true,
+      isCompleteLoop: false,
+      energizedWireIds: new Set(),
+      partHints: emptyHints(scene),
+      statusMessage:
+        'No complete path from line (L) to neutral (N). Check wires, breaker, and switch.',
+    };
+  }
+
+  const dTotal = distA.get(end)!;
+  const energizedWires = new Set(
+    graph.edges
+      .filter(
+        (e) =>
+          e.kind === 'wire' &&
+          e.wireId !== null &&
+          edgeOnShortestPath(e, distA, distB, dTotal),
+      )
+      .map((e) => e.wireId!),
+  );
+
+  const hints = buildPartHints(
+    scene,
+    true,
+    graph.edges,
+    distA,
+    distB,
+    dTotal,
+  );
+
+  return {
+    testActive: true,
+    isCompleteLoop: true,
+    energizedWireIds: energizedWires,
+    partHints: hints,
+    statusMessage:
+      'Complete loop: line (L) to neutral (N) path complete (house wiring model).',
+  };
+}
+
+/**
+ * Phase A: DC — battery + to −; AC — AC inlet L to N. Energize wires on shortest paths.
+ */
+export function simulate(scene: Scene, options: SimulateOptions): SimResult {
+  const supplyKind: SupplyKind = options.supplyKind ?? 'dc';
+
+  if (!options.testActive) {
+    return {
+      testActive: false,
+      isCompleteLoop: false,
+      energizedWireIds: new Set(),
+      partHints: emptyHints(scene),
+      statusMessage: 'Test is off. Turn on Test to check the circuit.',
+    };
+  }
+
+  if (supplyKind === 'ac') {
+    return simulateAc(scene);
+  }
+  return simulateDc(scene);
 }

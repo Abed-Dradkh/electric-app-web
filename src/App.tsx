@@ -8,6 +8,7 @@ import {
 } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import { initialScene, sceneReducer } from './model/scene';
+import type { SupplyKind } from './model/supplyKind';
 import type { ComponentKind } from './model/types';
 import type { PartId } from './model/ids';
 import type { PinId } from './model/ids';
@@ -20,6 +21,10 @@ import {
   type RotateHandlePosition,
 } from './ui/partHoverLayout';
 import { Palette } from './ui/palette/Palette';
+import {
+  loadStoredSupplyKind,
+  persistSupplyKind,
+} from './ui/supplyKindStorage';
 import { PartView } from './ui/parts/PartView';
 import { WireLayer } from './ui/wires/WireLayer';
 import {
@@ -44,6 +49,9 @@ export function App() {
     useState<RotateHandlePosition>(
       () => loadStoredRotateHandlePosition() ?? 'right',
     );
+  const [supplyKind, setSupplyKind] = useState<SupplyKind>(
+    () => loadStoredSupplyKind() ?? 'dc',
+  );
   const reducedMotion = useReducedMotion();
   const svgRef = useRef<SVGSVGElement | null>(null);
   const sceneRef = useRef(scene);
@@ -60,9 +68,13 @@ export function App() {
   } | null>(null);
 
   const sim = useMemo(
-    () => simulate(scene, { testActive }),
-    [scene, testActive],
+    () => simulate(scene, { testActive, supplyKind }),
+    [scene, testActive, supplyKind],
   );
+
+  useEffect(() => {
+    persistSupplyKind(supplyKind);
+  }, [supplyKind]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -216,7 +228,11 @@ export function App() {
         </div>
       </header>
       <div className="app-main">
-        <Palette onAdd={addPart} />
+        <Palette
+          supplyKind={supplyKind}
+          onSupplyKindChange={setSupplyKind}
+          onAdd={addPart}
+        />
         <section
           className="board-section"
           aria-label="Workbench board"
@@ -239,6 +255,7 @@ export function App() {
               energizedWireIds={sim.energizedWireIds}
               testActive={sim.testActive}
               reducedMotion={reducedMotion}
+              supplyKind={supplyKind}
             />
             {scene.parts.map((p) => (
               <PartView
@@ -257,6 +274,11 @@ export function App() {
                 onToggleSwitch={
                   p.kind === 'switch'
                     ? () => dispatch({ type: 'toggleSwitch', partId: p.id })
+                    : undefined
+                }
+                onToggleBreaker={
+                  p.kind === 'breaker_2p'
+                    ? () => dispatch({ type: 'toggleBreaker', partId: p.id })
                     : undefined
                 }
                 onRotatePointerDown={(e) => onRotatePointerDown(p.id, e)}

@@ -15,6 +15,12 @@ export function initialScene(): Scene {
 export function sceneReducer(state: Scene, action: SceneAction): Scene {
   switch (action.type) {
     case 'addPart': {
+      if (
+        action.kind === 'ac_supply' &&
+        state.parts.some((p) => p.kind === 'ac_supply')
+      ) {
+        return state;
+      }
       const id = partId(`p${state.nextPartIndex}`);
       const base = {
         id,
@@ -22,7 +28,9 @@ export function sceneReducer(state: Scene, action: SceneAction): Scene {
         x: action.x,
         y: action.y,
         rotationDeg: 0,
-        switchClosed: action.kind === 'switch',
+        /** Switches start open (Off); user turns On to close the contact. */
+        switchClosed: false,
+        breakerOn: action.kind === 'breaker_2p',
       };
       return {
         ...state,
@@ -52,6 +60,15 @@ export function sceneReducer(state: Scene, action: SceneAction): Scene {
         parts: state.parts.map((p) =>
           p.id === action.partId && p.kind === 'switch'
             ? { ...p, switchClosed: !p.switchClosed }
+            : p,
+        ),
+      };
+    case 'toggleBreaker':
+      return {
+        ...state,
+        parts: state.parts.map((p) =>
+          p.id === action.partId && p.kind === 'breaker_2p'
+            ? { ...p, breakerOn: !p.breakerOn }
             : p,
         ),
       };
