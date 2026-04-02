@@ -1,0 +1,110 @@
+import { partId, wireId } from './ids';
+import { allPinsForPart } from './pinLayout';
+import type { Scene, SceneAction } from './types';
+
+export function initialScene(): Scene {
+  return {
+    parts: [],
+    wires: [],
+    wireDraftFrom: null,
+    nextPartIndex: 1,
+    nextWireIndex: 1,
+  };
+}
+
+export function sceneReducer(state: Scene, action: SceneAction): Scene {
+  switch (action.type) {
+    case 'addPart': {
+      const id = partId(`p${state.nextPartIndex}`);
+      const base = {
+        id,
+        kind: action.kind,
+        x: action.x,
+        y: action.y,
+        rotationDeg: 0,
+        switchClosed: action.kind === 'switch',
+      };
+      return {
+        ...state,
+        parts: [...state.parts, base],
+        nextPartIndex: state.nextPartIndex + 1,
+      };
+    }
+    case 'movePart':
+      return {
+        ...state,
+        parts: state.parts.map((p) =>
+          p.id === action.partId ? { ...p, x: action.x, y: action.y } : p,
+        ),
+      };
+    case 'setPartRotation':
+      return {
+        ...state,
+        parts: state.parts.map((p) =>
+          p.id === action.partId
+            ? { ...p, rotationDeg: action.rotationDeg }
+            : p,
+        ),
+      };
+    case 'toggleSwitch':
+      return {
+        ...state,
+        parts: state.parts.map((p) =>
+          p.id === action.partId && p.kind === 'switch'
+            ? { ...p, switchClosed: !p.switchClosed }
+            : p,
+        ),
+      };
+    case 'beginWire':
+      return { ...state, wireDraftFrom: action.pin };
+    case 'completeWire': {
+      const a = state.wireDraftFrom;
+      if (a === null || a === action.pin) {
+        return { ...state, wireDraftFrom: null };
+      }
+      const exists = state.wires.some(
+        (w) =>
+          (w.pinA === a && w.pinB === action.pin) ||
+          (w.pinA === action.pin && w.pinB === a),
+      );
+      if (exists) {
+        return { ...state, wireDraftFrom: null };
+      }
+      const wid = wireId(`w${state.nextWireIndex}`);
+      const wire = { id: wid, pinA: a, pinB: action.pin };
+      return {
+        ...state,
+        wires: [...state.wires, wire],
+        wireDraftFrom: null,
+        nextWireIndex: state.nextWireIndex + 1,
+      };
+    }
+    case 'cancelWire':
+      return { ...state, wireDraftFrom: null };
+    case 'deleteWire':
+      return {
+        ...state,
+        wires: state.wires.filter((w) => w.id !== action.wireId),
+      };
+    case 'deletePart': {
+      const part = state.parts.find((p) => p.id === action.partId);
+      if (!part) return state;
+      const pinSet = new Set(allPinsForPart(part));
+      return {
+        ...state,
+        parts: state.parts.filter((p) => p.id !== action.partId),
+        wires: state.wires.filter(
+          (w) => !pinSet.has(w.pinA) && !pinSet.has(w.pinB),
+        ),
+        wireDraftFrom:
+          state.wireDraftFrom && pinSet.has(state.wireDraftFrom)
+            ? null
+            : state.wireDraftFrom,
+      };
+    }
+    default: {
+      const _never: never = action;
+      return _never;
+    }
+  }
+}
