@@ -1,4 +1,6 @@
 import type { MouseEvent, PointerEvent } from 'react';
+import type { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import type { PinId } from '../../model/ids';
 import {
   PIN_ROLES,
@@ -50,11 +52,12 @@ export function PartView({
   onToggleBreaker,
   onRotatePointerDown,
 }: PartViewProps) {
+  const { t } = useTranslation();
   const bar = partHoverBarBox(part.kind, hoverBarPosition);
   const rotateBox = PART_ROTATE_HANDLE_BOX[rotateHandlePosition];
   const placementClass = `part-actions-inner--${hoverBarPosition}`;
   const roles = PIN_ROLES[part.kind];
-  const label = labelForPart(part);
+  const label = partLabel(t, part);
   const isSupply =
     part.kind === 'battery' || part.kind === 'ac_supply';
   const loadOn =
@@ -95,12 +98,12 @@ export function PartView({
         </text>
         {part.kind === 'switch' ? (
           <text className="part-switch-state" x={0} y={22} textAnchor="middle">
-            {part.switchClosed ? 'On' : 'Off'}
+            {part.switchClosed ? t('common.on') : t('common.off')}
           </text>
         ) : null}
         {part.kind === 'breaker_2p' ? (
           <text className="part-switch-state" x={0} y={22} textAnchor="middle">
-            {part.breakerOn ? 'On' : 'Off'}
+            {part.breakerOn ? t('common.on') : t('common.off')}
           </text>
         ) : null}
         <foreignObject
@@ -129,11 +132,11 @@ export function PartView({
                   aria-pressed={part.switchClosed}
                   aria-label={
                     part.switchClosed
-                      ? 'Switch is on. Click to turn off.'
-                      : 'Switch is off. Click to turn on.'
+                      ? t('partView.switchOnAria')
+                      : t('partView.switchOffAria')
                   }
                 >
-                  {part.switchClosed ? 'On' : 'Off'}
+                  {part.switchClosed ? t('common.on') : t('common.off')}
                 </button>
               ) : null}
               {part.kind === 'breaker_2p' && onToggleBreaker ? (
@@ -154,11 +157,11 @@ export function PartView({
                   aria-pressed={part.breakerOn}
                   aria-label={
                     part.breakerOn
-                      ? 'Breaker is on. Click to turn off.'
-                      : 'Breaker is off. Click to turn on.'
+                      ? t('partView.breakerOnAria')
+                      : t('partView.breakerOffAria')
                   }
                 >
-                  {part.breakerOn ? 'On' : 'Off'}
+                  {part.breakerOn ? t('common.on') : t('common.off')}
                 </button>
               ) : null}
               <button
@@ -169,7 +172,7 @@ export function PartView({
                   e.stopPropagation();
                   onRemove();
                 }}
-                aria-label={`Remove ${label}`}
+                aria-label={t('partView.remove', { label })}
               >
                 <TrashIcon />
               </button>
@@ -186,7 +189,7 @@ export function PartView({
             <button
               type="button"
               className="part-rotate-btn"
-              aria-label="Rotate part; drag while holding, release to set angle"
+              aria-label={t('partView.rotateAria')}
               onPointerDown={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -208,7 +211,7 @@ export function PartView({
                 className={`pin-hit ${selected ? 'pin-hit--selected' : ''}`}
                 tabIndex={0}
                 role="button"
-                aria-label={pinAria(part.kind, role)}
+                aria-label={pinAria(t, part.kind, role)}
                 onPointerDown={(e) => {
                   e.stopPropagation();
                   onPinClick(id);
@@ -265,45 +268,30 @@ function TrashIcon() {
   );
 }
 
-function labelForPart(part: Part): string {
-  switch (part.kind) {
-    case 'battery':
-      return 'Battery';
-    case 'bulb':
-      return 'Bulb';
-    case 'resistor':
-      return 'Resistor';
-    case 'led':
-      return 'LED';
-    case 'switch':
-      return 'Switch';
-    case 'ac_supply':
-      return 'AC supply';
-    case 'breaker_2p':
-      return 'Breaker';
-  }
+function partLabel(t: TFunction, part: Part): string {
+  return t(`part.${part.kind}`);
 }
 
-function pinAria(kind: Part['kind'], role: PinRole): string {
+function pinAria(t: TFunction, kind: Part['kind'], role: PinRole): string {
   if (kind === 'battery') {
-    return role === 'positive' ? 'Positive terminal' : 'Negative terminal';
+    return role === 'positive' ? t('pin.positive') : t('pin.negative');
   }
   if (kind === 'ac_supply') {
-    return role === 'l' ? 'Line (L)' : 'Neutral (N)';
+    return role === 'l' ? t('pin.line') : t('pin.neutral');
   }
   if (kind === 'breaker_2p') {
     switch (role) {
       case 'l_in':
-        return 'Line in';
+        return t('pin.lineIn');
       case 'n_in':
-        return 'Neutral in';
+        return t('pin.neutralIn');
       case 'l_out':
-        return 'Line out';
+        return t('pin.lineOut');
       case 'n_out':
-        return 'Neutral out';
+        return t('pin.neutralOut');
       default:
-        return 'Pin';
+        return t('pin.generic', { role: '?' });
     }
   }
-  return `Pin ${String(role).toUpperCase()}`;
+  return t('pin.generic', { role: String(role).toUpperCase() });
 }

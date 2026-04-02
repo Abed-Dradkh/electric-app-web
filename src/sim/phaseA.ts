@@ -1,3 +1,4 @@
+import i18n from '../i18n';
 import { buildGraph } from '../graph/buildGraph';
 import type { GraphEdge } from '../graph/types';
 import { makePinId } from '../model/pinLayout';
@@ -157,7 +158,7 @@ function simulateDc(scene: Scene): SimResult {
       isCompleteLoop: false,
       energizedWireIds: new Set(),
       partHints: emptyHints(scene),
-      statusMessage: 'Add a battery to form a complete loop.',
+      statusMessage: i18n.t('sim.dcAddBattery'),
     };
   }
 
@@ -174,8 +175,7 @@ function simulateDc(scene: Scene): SimResult {
       isCompleteLoop: false,
       energizedWireIds: new Set(),
       partHints: emptyHints(scene),
-      statusMessage:
-        'No complete path from battery positive to negative. Check wires and switches.',
+      statusMessage: i18n.t('sim.dcNoPath'),
     };
   }
 
@@ -205,8 +205,7 @@ function simulateDc(scene: Scene): SimResult {
     isCompleteLoop: true,
     energizedWireIds: energizedWires,
     partHints: hints,
-    statusMessage:
-      'Complete loop: conventional current flows from positive to negative.',
+    statusMessage: i18n.t('sim.dcComplete'),
   };
 }
 
@@ -218,8 +217,7 @@ function simulateAc(scene: Scene): SimResult {
       isCompleteLoop: false,
       energizedWireIds: new Set(),
       partHints: emptyHints(scene),
-      statusMessage:
-        'Add an AC supply (L and N) to form a complete path from line to neutral.',
+      statusMessage: i18n.t('sim.acAddInlet'),
     };
   }
 
@@ -236,8 +234,7 @@ function simulateAc(scene: Scene): SimResult {
       isCompleteLoop: false,
       energizedWireIds: new Set(),
       partHints: emptyHints(scene),
-      statusMessage:
-        'No complete path from line (L) to neutral (N). Check wires, breaker, and switch.',
+      statusMessage: i18n.t('sim.acNoPath'),
     };
   }
 
@@ -267,8 +264,7 @@ function simulateAc(scene: Scene): SimResult {
     isCompleteLoop: true,
     energizedWireIds: energizedWires,
     partHints: hints,
-    statusMessage:
-      'Complete loop: line (L) to neutral (N) path complete (house wiring model).',
+    statusMessage: i18n.t('sim.acComplete'),
   };
 }
 
@@ -284,7 +280,7 @@ export function simulate(scene: Scene, options: SimulateOptions): SimResult {
       isCompleteLoop: false,
       energizedWireIds: new Set(),
       partHints: emptyHints(scene),
-      statusMessage: 'Test is off. Turn on Test to check the circuit.',
+      statusMessage: i18n.t('sim.testOff'),
     };
   }
 

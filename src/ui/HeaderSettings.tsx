@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { PartHoverBarPosition, RotateHandlePosition } from './partHoverLayout';
 import {
   persistHoverBarPosition,
@@ -39,7 +40,9 @@ export function HeaderSettings({
   rotateHandlePosition,
   onRotateHandlePositionChange,
 }: HeaderSettingsProps) {
+  const { t, i18n } = useTranslation();
   const wrapRef = useRef<HTMLDivElement>(null);
+  const labelLangId = useId();
   const labelBarId = useId();
   const labelRotateId = useId();
 
@@ -61,7 +64,7 @@ export function HeaderSettings({
       <button
         type="button"
         className="btn btn--icon"
-        aria-label="Settings"
+        aria-label={t('settings.open')}
         aria-expanded={open}
         aria-haspopup="true"
         aria-controls={open ? 'app-settings-panel' : undefined}
@@ -74,42 +77,122 @@ export function HeaderSettings({
           id="app-settings-panel"
           className="app-settings-dropdown"
           role="region"
-          aria-label="Workbench settings"
+          aria-label={t('settings.panelAria')}
         >
-          <p id={labelBarId} className="app-settings-label">
-            Actions (Remove / switch)
+          <p id={labelLangId} className="app-settings-label">
+            {t('settings.languageLabel')}
           </p>
-          <select
-            className="app-settings-select"
-            value={hoverBarPosition}
+          <div
+            className="app-settings-segment"
+            role="group"
+            aria-labelledby={labelLangId}
+            dir="ltr"
+          >
+            <button
+              type="button"
+              className={
+                i18n.language === 'en'
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={i18n.language === 'en'}
+              onClick={() => void i18n.changeLanguage('en')}
+            >
+              {t('lang.en')}
+            </button>
+            <button
+              type="button"
+              className={
+                i18n.language === 'ar'
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={i18n.language === 'ar'}
+              onClick={() => void i18n.changeLanguage('ar')}
+            >
+              {t('lang.ar')}
+            </button>
+          </div>
+          <p id={labelBarId} className="app-settings-label app-settings-label--second">
+            {t('settings.actionsLabel')}
+          </p>
+          <div
+            className="app-settings-segment"
+            role="group"
             aria-labelledby={labelBarId}
-            aria-label="Position of remove and switch controls"
-            onChange={(e) => {
-              const v = e.target.value as PartHoverBarPosition;
-              onHoverBarPositionChange(v);
-              persistHoverBarPosition(v);
-            }}
+            dir="ltr"
           >
-            <option value="up">Up</option>
-            <option value="down">Down</option>
-          </select>
-          <p id={labelRotateId} className="app-settings-label app-settings-label--second">
-            Rotate handle
+            <button
+              type="button"
+              className={
+                hoverBarPosition === 'up'
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={hoverBarPosition === 'up'}
+              onClick={() => {
+                onHoverBarPositionChange('up');
+                persistHoverBarPosition('up');
+              }}
+            >
+              {t('settings.up')}
+            </button>
+            <button
+              type="button"
+              className={
+                hoverBarPosition === 'down'
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={hoverBarPosition === 'down'}
+              onClick={() => {
+                onHoverBarPositionChange('down');
+                persistHoverBarPosition('down');
+              }}
+            >
+              {t('settings.down')}
+            </button>
+          </div>
+          <p id={labelRotateId} className="app-settings-label app-settings-label--third">
+            {t('settings.rotateLabel')}
           </p>
-          <select
-            className="app-settings-select"
-            value={rotateHandlePosition}
+          <div
+            className="app-settings-segment"
+            role="group"
             aria-labelledby={labelRotateId}
-            aria-label="Position of rotate handle"
-            onChange={(e) => {
-              const v = e.target.value as RotateHandlePosition;
-              onRotateHandlePositionChange(v);
-              persistRotateHandlePosition(v);
-            }}
+            dir="ltr"
           >
-            <option value="left">Left</option>
-            <option value="right">Right</option>
-          </select>
+            <button
+              type="button"
+              className={
+                rotateHandlePosition === 'left'
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={rotateHandlePosition === 'left'}
+              onClick={() => {
+                onRotateHandlePositionChange('left');
+                persistRotateHandlePosition('left');
+              }}
+            >
+              {t('settings.left')}
+            </button>
+            <button
+              type="button"
+              className={
+                rotateHandlePosition === 'right'
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={rotateHandlePosition === 'right'}
+              onClick={() => {
+                onRotateHandlePositionChange('right');
+                persistRotateHandlePosition('right');
+              }}
+            >
+              {t('settings.right')}
+            </button>
+          </div>
         </div>
       ) : null}
     </div>

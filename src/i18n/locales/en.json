@@ -1,0 +1,81 @@
+{
+  "app": {
+    "title": "Electric workshop",
+    "testOn": "Test on",
+    "testOff": "Test off",
+    "boardSectionAria": "Workbench board",
+    "boardSvgAria": "Circuit board; drag parts and connect pins."
+  },
+  "lang": {
+    "groupAria": "Language",
+    "en": "EN",
+    "ar": "عربي"
+  },
+  "palette": {
+    "asideAria": "Parts palette",
+    "supply": "Supply",
+    "parts": "Parts",
+    "dc": "DC",
+    "ac": "AC",
+    "hintAcSupply": "House wiring: connect line (L) to neutral (N) through loads.",
+    "hintDcSupply": "Bench parts: use wires between pins to build a DC circuit.",
+    "hintAcParts": "Click two pins to run a wire. Hover a part for remove and switch/breaker controls.",
+    "hintDcParts": "Click two pins to run a wire. Hover a part for remove and switch On/Off.",
+    "addPart": "Add {{label}}"
+  },
+  "part": {
+    "battery": "Battery",
+    "bulb": "Bulb",
+    "lamp": "Lamp",
+    "resistor": "Resistor",
+    "led": "LED",
+    "switch": "Switch",
+    "ac_supply": "AC supply (L/N)",
+    "breaker_2p": "Breaker (2P)"
+  },
+  "common": {
+    "on": "On",
+    "off": "Off"
+  },
+  "partView": {
+    "switchOnAria": "Switch is on. Click to turn off.",
+    "switchOffAria": "Switch is off. Click to turn on.",
+    "breakerOnAria": "Breaker is on. Click to turn off.",
+    "breakerOffAria": "Breaker is off. Click to turn on.",
+    "remove": "Remove {{label}}",
+    "rotateAria": "Rotate part; drag while holding, release to set angle"
+  },
+  "pin": {
+    "positive": "Positive terminal",
+    "negative": "Negative terminal",
+    "line": "Line (L)",
+    "neutral": "Neutral (N)",
+    "lineIn": "Line in",
+    "neutralIn": "Neutral in",
+    "lineOut": "Line out",
+    "neutralOut": "Neutral out",
+    "generic": "Pin {{role}}"
+  },
+  "settings": {
+    "open": "Settings",
+    "languageLabel": "Language",
+    "panelAria": "Workbench settings",
+    "actionsLabel": "Actions (Remove / switch)",
+    "actionsSelectAria": "Position of remove and switch controls",
+    "rotateLabel": "Rotate handle",
+    "rotateSelectAria": "Position of rotate handle",
+    "up": "Up",
+    "down": "Down",
+    "left": "Left",
+    "right": "Right"
+  },
+  "sim": {
+    "testOff": "Test is off. Turn on Test to check the circuit.",
+    "dcAddBattery": "Add a battery to form a complete loop.",
+    "dcNoPath": "No complete path from battery positive to negative. Check wires and switches.",
+    "dcComplete": "Complete loop: conventional current flows from positive to negative.",
+    "acAddInlet": "Add an AC supply (L and N) to form a complete path from line to neutral.",
+    "acNoPath": "No complete path from line (L) to neutral (N). Check wires, breaker, and switch.",
+    "acComplete": "Complete loop: line (L) to neutral (N) path complete (house wiring model)."
+  }
+}

@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { initialScene, sceneReducer } from './model/scene';
 import type { SupplyKind } from './model/supplyKind';
 import type { ComponentKind } from './model/types';
@@ -21,6 +22,10 @@ import {
   type RotateHandlePosition,
 } from './ui/partHoverLayout';
 import { Palette } from './ui/palette/Palette';
+import {
+  isAppLocale,
+  persistLocale,
+} from './ui/localeStorage';
 import {
   loadStoredSupplyKind,
   persistSupplyKind,
@@ -39,6 +44,7 @@ const BOARD_W = 800;
 const BOARD_H = 600;
 
 export function App() {
+  const { t, i18n } = useTranslation();
   const [scene, dispatch] = useReducer(sceneReducer, initialScene());
   const [testActive, setTestActive] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -67,10 +73,22 @@ export function App() {
     startRotationDeg: number;
   } | null>(null);
 
-  const sim = useMemo(
-    () => simulate(scene, { testActive, supplyKind }),
-    [scene, testActive, supplyKind],
-  );
+  const sim = useMemo(() => {
+    void i18n.language;
+    return simulate(scene, { testActive, supplyKind });
+  }, [scene, testActive, supplyKind, i18n.language]);
+
+  useEffect(() => {
+    document.documentElement.lang = i18n.language;
+    document.documentElement.dir =
+      i18n.language === 'ar' ? 'rtl' : 'ltr';
+  }, [i18n.language]);
+
+  useEffect(() => {
+    if (isAppLocale(i18n.language)) {
+      persistLocale(i18n.language);
+    }
+  }, [i18n.language]);
 
   useEffect(() => {
     persistSupplyKind(supplyKind);
@@ -207,7 +225,7 @@ export function App() {
   return (
     <div className="app-root">
       <header className="app-header">
-        <h1 className="app-title">Electric workshop</h1>
+        <h1 className="app-title">{t('app.title')}</h1>
         <div className="app-controls">
           <button
             type="button"
@@ -215,7 +233,7 @@ export function App() {
             aria-pressed={testActive}
             onClick={() => setTestActive((v) => !v)}
           >
-            {testActive ? 'Test on' : 'Test off'}
+            {testActive ? t('app.testOn') : t('app.testOff')}
           </button>
           <HeaderSettings
             open={settingsOpen}
@@ -235,14 +253,14 @@ export function App() {
         />
         <section
           className="board-section"
-          aria-label="Workbench board"
+          aria-label={t('app.boardSectionAria')}
         >
           <svg
             ref={svgRef}
             className="board-svg"
             viewBox={`0 0 ${BOARD_W} ${BOARD_H}`}
             role="img"
-            aria-label="Circuit board; drag parts and connect pins."
+            aria-label={t('app.boardSvgAria')}
           >
             <rect
               className="board-bg"
