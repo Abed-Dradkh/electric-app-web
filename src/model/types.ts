@@ -54,4 +54,5 @@ export type SceneAction =
   | { type: 'completeWire'; pin: PinId }
   | { type: 'cancelWire' }
   | { type: 'deleteWire'; wireId: WireId }
-  | { type: 'deletePart'; partId: PartId };
+  | { type: 'deletePart'; partId: PartId }
+  | { type: 'deleteParts'; partIds: readonly PartId[] };

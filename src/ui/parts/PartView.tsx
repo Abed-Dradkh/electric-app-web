@@ -19,6 +19,7 @@ import {
 
 export type PartViewProps = {
   readonly part: Part;
+  readonly selected: boolean;
   readonly hint: PartSimHint | undefined;
   readonly testActive: boolean;
   readonly draftPin: PinId | null;
@@ -40,6 +41,7 @@ function stopPartDrag(
 
 export function PartView({
   part,
+  selected,
   hint,
   testActive,
   draftPin,
@@ -71,6 +73,7 @@ export function PartView({
   const partClasses = [
     'part',
     'part-with-actions',
+    selected && 'part--selected',
     loadOn && 'part--load-on',
     batOn && 'part--battery-on',
     testIdle && 'part--test-idle',

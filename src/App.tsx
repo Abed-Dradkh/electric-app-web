@@ -9,10 +9,13 @@ import {
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { initialScene, sceneReducer } from './model/scene';
+import {
+  normalizeMarqueeRect,
+  partIdsInMarquee,
+} from './model/selectionBounds';
 import type { SupplyKind } from './model/supplyKind';
 import type { ComponentKind } from './model/types';
-import type { PartId } from './model/ids';
-import type { PinId } from './model/ids';
+import type { PartId, PinId, WireId } from './model/ids';
 import { simulate } from './sim';
 import { HeaderSettings } from './ui/HeaderSettings';
 import {
@@ -31,6 +34,7 @@ import {
   persistSupplyKind,
 } from './ui/supplyKindStorage';
 import { PartView } from './ui/parts/PartView';
+import { SelectionToolbar } from './ui/SelectionToolbar';
 import { WireLayer } from './ui/wires/WireLayer';
 import {
   angleFromCenterDeg,
@@ -42,6 +46,9 @@ import { useReducedMotion } from './hooks/useReducedMotion';
 
 const BOARD_W = 800;
 const BOARD_H = 600;
+
+/** Drag length below this (board px) counts as a click, not a marquee. */
+const MARQUEE_CLICK_PX = 6;
 
 export function App() {
   const { t, i18n } = useTranslation();
@@ -72,6 +79,16 @@ export function App() {
     startPointerAngleDeg: number;
     startRotationDeg: number;
   } | null>(null);
+  const [selectedIds, setSelectedIds] = useState<ReadonlySet<PartId>>(
+    () => new Set(),
+  );
+  const [marquee, setMarquee] = useState<{
+    x0: number;
+    y0: number;
+    x1: number;
+    y1: number;
+  } | null>(null);
+  const marqueeStartRef = useRef<{ x0: number; y0: number } | null>(null);
 
   const sim = useMemo(() => {
     void i18n.language;
@@ -99,11 +116,166 @@ export function App() {
       if (e.key === 'Escape') {
         dispatch({ type: 'cancelWire' });
         setSettingsOpen(false);
+        setSelectedIds(new Set());
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+        const el = e.target;
+        if (
+          el instanceof HTMLInputElement ||
+          el instanceof HTMLTextAreaElement ||
+          el instanceof HTMLSelectElement
+        ) {
+          return;
+        }
+        e.preventDefault();
+        setSelectedIds(new Set(sceneRef.current.parts.map((p) => p.id)));
       }
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+
+  useEffect(() => {
+    const valid = new Set(scene.parts.map((p) => p.id));
+    setSelectedIds((prev) => {
+      let changed = false;
+      const next = new Set<PartId>();
+      for (const id of prev) {
+        if (valid.has(id)) {
+          next.add(id);
+        } else {
+          changed = true;
+        }
+      }
+      if (!changed && next.size === prev.size) {
+        return prev;
+      }
+      return next;
+    });
+  }, [scene.parts]);
+
+  const marqueeRectNorm = useMemo(
+    () =>
+      marquee
+        ? normalizeMarqueeRect(
+            marquee.x0,
+            marquee.y0,
+            marquee.x1,
+            marquee.y1,
+          )
+        : null,
+    [marquee],
+  );
+
+  const onBoardPointerDown = useCallback(
+    (e: ReactPointerEvent<SVGRectElement>) => {
+      if (e.button !== 0) return;
+      const svg = svgRef.current;
+      if (!svg) return;
+      e.currentTarget.setPointerCapture(e.pointerId);
+      const { x, y } = screenToBoard(
+        e.clientX,
+        e.clientY,
+        svg,
+        identityTransform,
+      );
+      marqueeStartRef.current = { x0: x, y0: y };
+      setMarquee({ x0: x, y0: y, x1: x, y1: y });
+    },
+    [],
+  );
+
+  const onBoardPointerMove = useCallback(
+    (e: ReactPointerEvent<SVGRectElement>) => {
+      if (!marqueeStartRef.current) return;
+      const svg = svgRef.current;
+      if (!svg) return;
+      const { x, y } = screenToBoard(
+        e.clientX,
+        e.clientY,
+        svg,
+        identityTransform,
+      );
+      const { x0, y0 } = marqueeStartRef.current;
+      setMarquee({ x0, y0, x1: x, y1: y });
+    },
+    [],
+  );
+
+  const finishMarquee = useCallback(
+    (
+      e: ReactPointerEvent<SVGRectElement>,
+      clientX: number,
+      clientY: number,
+    ) => {
+      const start = marqueeStartRef.current;
+      if (!start) return;
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {
+        /* ignore */
+      }
+      const svg = svgRef.current;
+      if (!svg) return;
+      const { x, y } = screenToBoard(
+        clientX,
+        clientY,
+        svg,
+        identityTransform,
+      );
+      const norm = normalizeMarqueeRect(start.x0, start.y0, x, y);
+      const w = norm.maxX - norm.minX;
+      const h = norm.maxY - norm.minY;
+      const diag = Math.hypot(w, h);
+      const parts = sceneRef.current.parts;
+
+      if (diag < MARQUEE_CLICK_PX) {
+        dispatch({ type: 'cancelWire' });
+        if (!e.shiftKey) {
+          setSelectedIds(new Set());
+        }
+      } else {
+        const ids = partIdsInMarquee(parts, norm);
+        const idSet = new Set(ids);
+        if (e.shiftKey) {
+          setSelectedIds((prev) => new Set([...prev, ...idSet]));
+        } else {
+          setSelectedIds(idSet);
+        }
+      }
+      setMarquee(null);
+      marqueeStartRef.current = null;
+    },
+    [],
+  );
+
+  const onBoardPointerUp = useCallback(
+    (e: ReactPointerEvent<SVGRectElement>) => {
+      finishMarquee(e, e.clientX, e.clientY);
+    },
+    [finishMarquee],
+  );
+
+  const onBoardPointerCancel = useCallback(
+    (e: ReactPointerEvent<SVGRectElement>) => {
+      if (!marqueeStartRef.current) return;
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {
+        /* ignore */
+      }
+      setMarquee(null);
+      marqueeStartRef.current = null;
+    },
+    [],
+  );
+
+  const removeSelected = useCallback(() => {
+    const ids = [...selectedIds];
+    if (ids.length === 0) return;
+    dispatch({ type: 'deleteParts', partIds: ids });
+    setSelectedIds(new Set());
+  }, [selectedIds, dispatch]);
 
   const addPart = useCallback((kind: ComponentKind) => {
     const n = scene.parts.length;
@@ -119,6 +291,10 @@ export function App() {
       dispatch({ type: 'completeWire', pin });
     }
   }, [scene.wireDraftFrom]);
+
+  const onRemoveWire = useCallback((wireId: WireId) => {
+    dispatch({ type: 'deleteWire', wireId });
+  }, []);
 
   const onBodyPointerDown = useCallback(
     (partId: PartId, e: ReactPointerEvent<SVGRectElement>) => {
@@ -267,6 +443,10 @@ export function App() {
               width={BOARD_W}
               height={BOARD_H}
               rx={12}
+              onPointerDown={onBoardPointerDown}
+              onPointerMove={onBoardPointerMove}
+              onPointerUp={onBoardPointerUp}
+              onPointerCancel={onBoardPointerCancel}
             />
             <WireLayer
               scene={scene}
@@ -274,11 +454,13 @@ export function App() {
               testActive={sim.testActive}
               reducedMotion={reducedMotion}
               supplyKind={supplyKind}
+              onRemoveWire={onRemoveWire}
             />
             {scene.parts.map((p) => (
               <PartView
                 key={p.id}
                 part={p}
+                selected={selectedIds.has(p.id)}
                 hint={sim.partHints.get(p.id)}
                 testActive={sim.testActive}
                 draftPin={scene.wireDraftFrom}
@@ -302,6 +484,23 @@ export function App() {
                 onRotatePointerDown={(e) => onRotatePointerDown(p.id, e)}
               />
             ))}
+            {marqueeRectNorm ? (
+              <rect
+                className="selection-marquee"
+                x={marqueeRectNorm.minX}
+                y={marqueeRectNorm.minY}
+                width={marqueeRectNorm.maxX - marqueeRectNorm.minX}
+                height={marqueeRectNorm.maxY - marqueeRectNorm.minY}
+                rx={2}
+              />
+            ) : null}
+            {selectedIds.size > 0 ? (
+              <SelectionToolbar
+                boardWidth={BOARD_W}
+                count={selectedIds.size}
+                onRemove={removeSelected}
+              />
+            ) : null}
           </svg>
           <p className="sr-only" role="status" aria-live="polite">
             {sim.statusMessage}

@@ -19,9 +19,12 @@
     "ac": "AC",
     "hintAcSupply": "House wiring: connect line (L) to neutral (N) through loads.",
     "hintDcSupply": "Bench parts: use wires between pins to build a DC circuit.",
-    "hintAcParts": "Click two pins to run a wire. Hover a part for remove and switch/breaker controls.",
-    "hintDcParts": "Click two pins to run a wire. Hover a part for remove and switch On/Off.",
+    "hintAcParts": "Click two pins to run a wire; click a wire to remove it. Hover a part for remove and switch/breaker controls.",
+    "hintDcParts": "Click two pins to run a wire; click a wire to remove it. Hover a part for remove and switch On/Off.",
     "addPart": "Add {{label}}"
+  },
+  "wire": {
+    "removeWire": "Remove wire"
   },
   "part": {
     "battery": "Battery",
@@ -68,6 +71,9 @@
     "down": "Down",
     "left": "Left",
     "right": "Right"
+  },
+  "selection": {
+    "removeCount": "Remove ({{count}})"
   },
   "sim": {
     "testOff": "Test is off. Turn on Test to check the circuit.",

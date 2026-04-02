@@ -315,12 +315,119 @@ body {
   fill: #4a3828;
   stroke: var(--color-board-edge);
   stroke-width: 2;
+  cursor: crosshair;
+}
+
+.selection-marquee {
+  fill: rgba(232, 165, 75, 0.12);
+  stroke: var(--color-accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+  pointer-events: none;
+}
+
+.selection-toolbar-inner {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+/* Wider than icon-only `.part-action-btn` (44×44); text must not clip. */
+.part-action-btn.selection-toolbar-btn {
+  width: auto;
+  min-width: 44px;
+  height: auto;
+  min-height: 44px;
+  padding: 0.45rem 1rem;
+  box-sizing: border-box;
+}
+
+.selection-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.wire-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 22;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.wire-hit:hover {
+  stroke: rgba(232, 165, 75, 0.2);
+}
+
+.wire-hit:focus {
+  outline: none;
+}
+
+.wire-hit:focus-visible {
+  stroke: rgba(232, 165, 75, 0.45);
+}
+
+.wire-hover-hint {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.14s ease;
+}
+
+.wire-bundle:hover .wire-hover-hint,
+.wire-bundle:focus-within .wire-hover-hint {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wire-hover-hint {
+    transition: none;
+  }
+}
+
+.wire-hover-hint-bg {
+  fill: var(--color-surface);
+  stroke: var(--color-accent);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
+}
+
+/* Vector × (not text) — avoids blurry / off-center font glyph on wires. */
+.wire-hover-hint-x {
+  stroke: var(--color-accent);
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+  shape-rendering: geometricPrecision;
+}
+
+/* Touch / no hover: keep a faint remove cue on wires. */
+@media (hover: none), (pointer: coarse) {
+  .wire-hover-hint {
+    opacity: 0.5;
+  }
+
+  .wire-bundle:hover .wire-hover-hint,
+  .wire-bundle:focus-within .wire-hover-hint {
+    opacity: 1;
+  }
 }
 
 .wire-stroke {
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
+  pointer-events: none;
 }
 
 .wire-stroke--idle {
@@ -521,6 +628,11 @@ body {
   cursor: grabbing;
 }
 
+.part--selected .part-body {
+  stroke: var(--color-accent);
+  stroke-width: 2.5;
+}
+
 .part-label {
   fill: var(--color-text);
   font-size: 13px;
@@ -566,6 +678,12 @@ body {
 .part--battery-on .part-body {
   stroke: #8fbc6a;
   filter: drop-shadow(0 0 6px rgba(120, 200, 90, 0.45));
+}
+
+.part--load-on.part--selected .part-body,
+.part--battery-on.part--selected .part-body,
+.part--test-idle.part--selected .part-body {
+  stroke: var(--color-accent);
 }
 
 .pin-hit {

@@ -1,4 +1,4 @@
-import { partId, wireId } from './ids';
+import { partId, wireId, type PinId } from './ids';
 import { allPinsForPart } from './pinLayout';
 import type { Scene, SceneAction } from './types';
 
@@ -110,6 +110,29 @@ export function sceneReducer(state: Scene, action: SceneAction): Scene {
       return {
         ...state,
         parts: state.parts.filter((p) => p.id !== action.partId),
+        wires: state.wires.filter(
+          (w) => !pinSet.has(w.pinA) && !pinSet.has(w.pinB),
+        ),
+        wireDraftFrom:
+          state.wireDraftFrom && pinSet.has(state.wireDraftFrom)
+            ? null
+            : state.wireDraftFrom,
+      };
+    }
+    case 'deleteParts': {
+      const remove = new Set(action.partIds);
+      if (remove.size === 0) return state;
+      const pinSet = new Set<PinId>();
+      for (const p of state.parts) {
+        if (remove.has(p.id)) {
+          for (const pin of allPinsForPart(p)) {
+            pinSet.add(pin);
+          }
+        }
+      }
+      return {
+        ...state,
+        parts: state.parts.filter((p) => !remove.has(p.id)),
         wires: state.wires.filter(
           (w) => !pinSet.has(w.pinA) && !pinSet.has(w.pinB),
         ),
