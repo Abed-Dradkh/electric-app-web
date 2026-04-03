@@ -29,12 +29,7 @@ const PART_ACTION_BTN_PX = 44;
 export const ROTATE_HANDLE_PX = 44;
 
 /** Hover bar: two icon buttons (toggle + remove) or one centered remove. */
-<<<<<<< HEAD
-const HOVER_BAR_WIDTH =
-  PART_ACTION_BTN_PX + 8 + PART_ACTION_BTN_PX;
-=======
 const HOVER_BAR_WIDTH = PART_ACTION_BTN_PX + 8 + PART_ACTION_BTN_PX;
->>>>>>> e1d5bf1 (updates)
 const HOVER_BAR_HEIGHT = PART_ACTION_BTN_PX;
 
 /**

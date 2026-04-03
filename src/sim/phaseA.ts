@@ -150,8 +150,6 @@ function emptyHints(scene: Scene): Map<PartId, PartSimHint> {
   return m;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * When Test is on in AC mode, the inlet is always “live” as the provider,
  * even if L–N is not yet connected through the circuit.
@@ -165,7 +163,6 @@ function hintsWithAcSupplyAlwaysEnergized(scene: Scene): Map<PartId, PartSimHint
   return m;
 }
 
->>>>>>> e1d5bf1 (updates)
 function simulateDc(scene: Scene): SimResult {
   const batteryPartId = findBatteryPartId(scene);
   if (batteryPartId === null) {
@@ -249,11 +246,7 @@ function simulateAc(scene: Scene): SimResult {
       testActive: true,
       isCompleteLoop: false,
       energizedWireIds: new Set(),
-<<<<<<< HEAD
-      partHints: emptyHints(scene),
-=======
       partHints: hintsWithAcSupplyAlwaysEnergized(scene),
->>>>>>> e1d5bf1 (updates)
       statusMessage: i18n.t('sim.acNoPath'),
     };
   }

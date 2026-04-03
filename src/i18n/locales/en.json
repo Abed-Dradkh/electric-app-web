@@ -19,14 +19,6 @@
     "ac": "AC",
     "hintAcSupply": "House wiring: connect line (L) to neutral (N) through loads.",
     "hintDcSupply": "Bench parts: use wires between pins to build a DC circuit.",
-<<<<<<< HEAD
-    "hintAcParts": "Click two pins to run a wire; click a wire to remove it. Hover a part for remove and switch/breaker controls.",
-    "hintDcParts": "Click two pins to run a wire; click a wire to remove it. Hover a part for remove and switch On/Off.",
-    "addPart": "Add {{label}}"
-  },
-  "wire": {
-    "removeWire": "Remove wire"
-=======
     "hintAcParts": "Click a pin, choose wire color, then click the other pin. Click a wire to remove it. Hover a part for remove and switch/breaker controls.",
     "hintDcParts": "Click a pin, choose wire color, then click the other pin. Click a wire to remove it. Hover a part for remove and switch On/Off.",
     "addPart": "Add {{label}}"
@@ -39,7 +31,6 @@
       "neutral": "Neutral (blue)",
       "switched": "Switched live (red)"
     }
->>>>>>> e1d5bf1 (updates)
   },
   "part": {
     "battery": "Battery",
@@ -72,9 +63,6 @@
     "neutralIn": "Neutral in",
     "lineOut": "Line out",
     "neutralOut": "Neutral out",
-<<<<<<< HEAD
-    "generic": "Pin {{role}}"
-=======
     "generic": "Pin {{role}}",
     "short": {
       "positive": "+",
@@ -90,7 +78,6 @@
       "lineOut": "Lo",
       "neutralOut": "No"
     }
->>>>>>> e1d5bf1 (updates)
   },
   "settings": {
     "open": "Settings",
@@ -100,12 +87,9 @@
     "actionsSelectAria": "Position of remove and switch controls",
     "rotateLabel": "Rotate handle",
     "rotateSelectAria": "Position of rotate handle",
-<<<<<<< HEAD
-=======
     "pinLabelsLabel": "Pin labels",
     "pinLabelsShow": "Show",
     "pinLabelsHide": "Hide",
->>>>>>> e1d5bf1 (updates)
     "up": "Up",
     "down": "Down",
     "left": "Left",

@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-import type { CircuitGraph, GraphEdge } from './types';
-import type { Scene } from '../model/types';
-import { makePinId } from '../model/pinLayout';
-=======
 import { makePinId } from '../model/pinLayout';
 import type { Scene } from '../model/types';
 import type { CircuitGraph, GraphEdge } from './types';
->>>>>>> e1d5bf1 (updates)
 
 function internalId(partId: string, suffix: string): string {
   return `int:${partId}:${suffix}`;

@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+import type { PointerEvent as ReactPointerEvent } from 'react';
 import {
   useCallback,
   useEffect,
@@ -7,77 +7,33 @@ import {
   useRef,
   useState,
 } from 'react';
-import type { PointerEvent as ReactPointerEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useReducedMotion } from './hooks/useReducedMotion';
+import type { PartId, PinId, WireId } from './model/ids';
 import { initialScene, sceneReducer } from './model/scene';
 import {
   normalizeMarqueeRect,
   partIdsInMarquee,
 } from './model/selectionBounds';
 import type { SupplyKind } from './model/supplyKind';
-import type { ComponentKind } from './model/types';
-import type { PartId, PinId, WireId } from './model/ids';
-import { simulate } from './sim';
-import { HeaderSettings } from './ui/HeaderSettings';
-=======
-import type { PointerEvent as ReactPointerEvent } from 'react';
-import {
-    useCallback,
-    useEffect,
-    useMemo,
-    useReducer,
-    useRef,
-    useState,
-} from 'react';
-import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from './hooks/useReducedMotion';
-import type { PartId, PinId, WireId } from './model/ids';
-import { initialScene, sceneReducer } from './model/scene';
-import {
-    normalizeMarqueeRect,
-    partIdsInMarquee,
-} from './model/selectionBounds';
-import type { SupplyKind } from './model/supplyKind';
 import { pinWorldPosition } from './model/pinLayout';
 import type { ComponentKind, WireKind } from './model/types';
 import { simulate } from './sim';
-import {
-    angleFromCenterDeg,
-    identityTransform,
-    normalizeDeg,
-    screenToBoard,
-} from './ui/coords';
-import { HeaderSettings } from './ui/HeaderSettings';
-import { isAppLocale, persistLocale } from './ui/localeStorage';
-import { Palette } from './ui/palette/Palette';
->>>>>>> e1d5bf1 (updates)
-import {
-  loadStoredHoverBarPosition,
-  loadStoredRotateHandlePosition,
-  type PartHoverBarPosition,
-  type RotateHandlePosition,
-} from './ui/partHoverLayout';
-<<<<<<< HEAD
-import { Palette } from './ui/palette/Palette';
-import {
-  isAppLocale,
-  persistLocale,
-} from './ui/localeStorage';
-import {
-  loadStoredSupplyKind,
-  persistSupplyKind,
-} from './ui/supplyKindStorage';
-import { PartView } from './ui/parts/PartView';
-import { SelectionToolbar } from './ui/SelectionToolbar';
-import { WireLayer } from './ui/wires/WireLayer';
 import {
   angleFromCenterDeg,
   identityTransform,
   normalizeDeg,
   screenToBoard,
 } from './ui/coords';
-import { useReducedMotion } from './hooks/useReducedMotion';
-=======
+import { HeaderSettings } from './ui/HeaderSettings';
+import { isAppLocale, persistLocale } from './ui/localeStorage';
+import { Palette } from './ui/palette/Palette';
+import {
+  loadStoredHoverBarPosition,
+  loadStoredRotateHandlePosition,
+  type PartHoverBarPosition,
+  type RotateHandlePosition,
+} from './ui/partHoverLayout';
 import {
   loadStoredPinLabelsVisible,
   persistPinLabelsVisible,
@@ -85,12 +41,11 @@ import {
 import { PartView } from './ui/parts/PartView';
 import { SelectionToolbar } from './ui/SelectionToolbar';
 import {
-    loadStoredSupplyKind,
-    persistSupplyKind,
+  loadStoredSupplyKind,
+  persistSupplyKind,
 } from './ui/supplyKindStorage';
 import { WireColorPickerOverlay } from './ui/wires/WireColorPickerOverlay';
 import { WireLayer } from './ui/wires/WireLayer';
->>>>>>> e1d5bf1 (updates)
 
 const BOARD_W = 800;
 const BOARD_H = 600;
@@ -103,24 +58,15 @@ export function App() {
   const [scene, dispatch] = useReducer(sceneReducer, initialScene());
   const [testActive, setTestActive] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-<<<<<<< HEAD
-  const [hoverBarPosition, setHoverBarPosition] = useState<PartHoverBarPosition>(
-    () => loadStoredHoverBarPosition() ?? 'up',
-  );
-=======
   const [hoverBarPosition, setHoverBarPosition] =
     useState<PartHoverBarPosition>(() => loadStoredHoverBarPosition() ?? 'up');
->>>>>>> e1d5bf1 (updates)
   const [rotateHandlePosition, setRotateHandlePosition] =
     useState<RotateHandlePosition>(
       () => loadStoredRotateHandlePosition() ?? 'right',
     );
-<<<<<<< HEAD
-=======
   const [pinLabelsVisible, setPinLabelsVisible] = useState(
     () => loadStoredPinLabelsVisible(),
   );
->>>>>>> e1d5bf1 (updates)
   const [supplyKind, setSupplyKind] = useState<SupplyKind>(
     () => loadStoredSupplyKind() ?? 'dc',
   );
@@ -148,8 +94,6 @@ export function App() {
     y1: number;
   } | null>(null);
   const marqueeStartRef = useRef<{ x0: number; y0: number } | null>(null);
-<<<<<<< HEAD
-=======
   const [wireColorPicker, setWireColorPicker] = useState<{
     pin: PinId;
     x: number;
@@ -157,7 +101,6 @@ export function App() {
   } | null>(null);
   const wireColorPickerRef = useRef(wireColorPicker);
   wireColorPickerRef.current = wireColorPicker;
->>>>>>> e1d5bf1 (updates)
 
   const sim = useMemo(() => {
     void i18n.language;
@@ -166,12 +109,7 @@ export function App() {
 
   useEffect(() => {
     document.documentElement.lang = i18n.language;
-<<<<<<< HEAD
-    document.documentElement.dir =
-      i18n.language === 'ar' ? 'rtl' : 'ltr';
-=======
     document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
->>>>>>> e1d5bf1 (updates)
   }, [i18n.language]);
 
   useEffect(() => {
@@ -188,10 +126,7 @@ export function App() {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         dispatch({ type: 'cancelWire' });
-<<<<<<< HEAD
-=======
         setWireColorPicker(null);
->>>>>>> e1d5bf1 (updates)
         setSettingsOpen(false);
         setSelectedIds(new Set());
       }
@@ -234,16 +169,7 @@ export function App() {
   const marqueeRectNorm = useMemo(
     () =>
       marquee
-<<<<<<< HEAD
-        ? normalizeMarqueeRect(
-            marquee.x0,
-            marquee.y0,
-            marquee.x1,
-            marquee.y1,
-          )
-=======
         ? normalizeMarqueeRect(marquee.x0, marquee.y0, marquee.x1, marquee.y1)
->>>>>>> e1d5bf1 (updates)
         : null,
     [marquee],
   );
@@ -298,16 +224,7 @@ export function App() {
       }
       const svg = svgRef.current;
       if (!svg) return;
-<<<<<<< HEAD
-      const { x, y } = screenToBoard(
-        clientX,
-        clientY,
-        svg,
-        identityTransform,
-      );
-=======
       const { x, y } = screenToBoard(clientX, clientY, svg, identityTransform);
->>>>>>> e1d5bf1 (updates)
       const norm = normalizeMarqueeRect(start.x0, start.y0, x, y);
       const w = norm.maxX - norm.minX;
       const h = norm.maxY - norm.minY;
@@ -316,10 +233,7 @@ export function App() {
 
       if (diag < MARQUEE_CLICK_PX) {
         dispatch({ type: 'cancelWire' });
-<<<<<<< HEAD
-=======
         setWireColorPicker(null);
->>>>>>> e1d5bf1 (updates)
         if (!e.shiftKey) {
           setSelectedIds(new Set());
         }
@@ -366,22 +280,6 @@ export function App() {
     setSelectedIds(new Set());
   }, [selectedIds, dispatch]);
 
-<<<<<<< HEAD
-  const addPart = useCallback((kind: ComponentKind) => {
-    const n = scene.parts.length;
-    const x = 160 + (n % 4) * 140;
-    const y = 160 + Math.floor(n / 4) * 100;
-    dispatch({ type: 'addPart', kind, x, y });
-  }, [scene.parts.length]);
-
-  const onPinClick = useCallback((pin: PinId) => {
-    if (scene.wireDraftFrom === null) {
-      dispatch({ type: 'beginWire', pin });
-    } else {
-      dispatch({ type: 'completeWire', pin });
-    }
-  }, [scene.wireDraftFrom]);
-=======
   const addPart = useCallback(
     (kind: ComponentKind) => {
       const n = scene.parts.length;
@@ -414,7 +312,6 @@ export function App() {
     },
     [dispatch],
   );
->>>>>>> e1d5bf1 (updates)
 
   const onRemoveWire = useCallback((wireId: WireId) => {
     dispatch({ type: 'deleteWire', wireId });
@@ -542,14 +439,11 @@ export function App() {
             onHoverBarPositionChange={setHoverBarPosition}
             rotateHandlePosition={rotateHandlePosition}
             onRotateHandlePositionChange={setRotateHandlePosition}
-<<<<<<< HEAD
-=======
             pinLabelsVisible={pinLabelsVisible}
             onPinLabelsVisibleChange={(v) => {
               setPinLabelsVisible(v);
               persistPinLabelsVisible(v);
             }}
->>>>>>> e1d5bf1 (updates)
           />
         </div>
       </header>
@@ -596,21 +490,12 @@ export function App() {
                 hint={sim.partHints.get(p.id)}
                 testActive={sim.testActive}
                 draftPin={scene.wireDraftFrom}
-<<<<<<< HEAD
-=======
                 showPinLabels={pinLabelsVisible}
->>>>>>> e1d5bf1 (updates)
                 hoverBarPosition={hoverBarPosition}
                 rotateHandlePosition={rotateHandlePosition}
                 onPinClick={onPinClick}
                 onBodyPointerDown={(e) => onBodyPointerDown(p.id, e)}
-<<<<<<< HEAD
-                onRemove={() =>
-                  dispatch({ type: 'deletePart', partId: p.id })
-                }
-=======
                 onRemove={() => dispatch({ type: 'deletePart', partId: p.id })}
->>>>>>> e1d5bf1 (updates)
                 onToggleSwitch={
                   p.kind === 'switch'
                     ? () => dispatch({ type: 'toggleSwitch', partId: p.id })
@@ -624,8 +509,6 @@ export function App() {
                 onRotatePointerDown={(e) => onRotatePointerDown(p.id, e)}
               />
             ))}
-<<<<<<< HEAD
-=======
             {wireColorPicker ? (
               <WireColorPickerOverlay
                 anchorX={wireColorPicker.x}
@@ -633,7 +516,6 @@ export function App() {
                 onPick={onPickWireKind}
               />
             ) : null}
->>>>>>> e1d5bf1 (updates)
             {marqueeRectNorm ? (
               <rect
                 className="selection-marquee"

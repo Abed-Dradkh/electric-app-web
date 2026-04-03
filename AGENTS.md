@@ -1,28 +1,14 @@
-<<<<<<< HEAD
-# AI rules — Web track (`electric_app/web`)
+﻿# AI rules ΓÇö Electric circuit workshop (`electric_app`)
 
-This document has **two parts**: **Part 1** describes rules for the **electric circuit workshop** browser app in this repo (board, wiring, simulation, electricity visuals). **Part 2** embeds a **general TypeScript, React, and Web AI guide** maintained for this repository (there is no separate external template path for web—unlike Flutter’s `flutter_uiuxpromax` embed). **If anything conflicts**, Part 1 wins—especially **domain architecture**, **simulation purity**, alignment with **`../flutter/`**, and **project-specific** stack choices.
-
----
-
-## Part 1 — Electric circuit workshop (web)
-
-This document guides AI and human contributors working in **`web/`** on the **electric circuit workshop** browser app: a **wooden bench** metaphor, **sidebar** parts/tools, **pin-to-pin wiring** (SVG paths or Canvas strokes), **simulation** (Phase A connectivity → Phase B polarity → optional Phase C Ohm’s-law lite), and **animated / static “electricity”** feedback on wires and components.
-
-**Product intent** lives in `README.md` in this folder; **keep README and this file aligned** when behavior or stack decisions change.
-=======
-# AI rules — Electric circuit workshop (`electric_app`)
-
-This document has **two parts**: **Part 1** describes rules for the **electric circuit workshop** browser app in this repo (board, wiring, simulation, electricity visuals). **Part 2** embeds a **general TypeScript and React AI guide** maintained for this repository. **If anything conflicts**, Part 1 wins—especially **domain architecture**, **simulation purity**, and **project-specific** stack choices.
+This document has **two parts**: **Part 1** describes rules for the **electric circuit workshop** browser app in this repo (board, wiring, simulation, electricity visuals). **Part 2** embeds a **general TypeScript and React AI guide** maintained for this repository. **If anything conflicts**, Part 1 winsΓÇöespecially **domain architecture**, **simulation purity**, and **project-specific** stack choices.
 
 ---
 
-## Part 1 — Electric circuit workshop (browser app)
+## Part 1 ΓÇö Electric circuit workshop (browser app)
 
-This document guides AI and human contributors working at the **project root** (alongside `README.md`, `AGENTS.md`, and `src/`) on the **electric circuit workshop** browser app: a **wooden bench** metaphor, **sidebar** parts/tools, **pin-to-pin wiring** (SVG paths or Canvas strokes), **simulation** (Phase A connectivity → Phase B polarity → optional Phase C Ohm’s-law lite), and **animated / static “electricity”** feedback on wires and components.
+This document guides AI and human contributors working at the **project root** (alongside `README.md`, `AGENTS.md`, and `src/`) on the **electric circuit workshop** browser app: a **wooden bench** metaphor, **sidebar** parts/tools, **pin-to-pin wiring** (SVG paths or Canvas strokes), **simulation** (Phase A connectivity ΓåÆ Phase B polarity ΓåÆ optional Phase C OhmΓÇÖs-law lite), and **animated / static ΓÇ£electricityΓÇ¥** feedback on wires and components.
 
 **Product intent** lives in **`README.md`** at the repository root; **keep README and this file aligned** when behavior or stack decisions change.
->>>>>>> e1d5bf1 (updates)
 
 ---
 
@@ -40,11 +26,7 @@ Assume the user understands programming but may need **short explanations** of R
 
 ## Interaction with the user
 
-<<<<<<< HEAD
-- If a request is **ambiguous**, clarify **React vs Vue** (default here is **React** unless the repo says otherwise), **SVG vs Canvas** for the current slice of work, and whether the change must stay **behavior-compatible** with **`../flutter/`**.
-=======
 - If a request is **ambiguous**, clarify **React vs Vue** (default here is **React** unless the repo says otherwise), **SVG vs Canvas** for the current slice of work, and whether the change must stay **consistent** with **`README.md`** and existing **tests** or **specs**.
->>>>>>> e1d5bf1 (updates)
 - When adding **npm dependencies**, justify **bundle size**, **maintenance**, and **overlap** with existing stack (e.g. avoid two state managers).
 - Prefer **running** `npm run build`, `npm run lint`, and `tsc --noEmit` (or project equivalents) over assuming a clean typecheck.
 
@@ -54,58 +36,30 @@ Assume the user understands programming but may need **short explanations** of R
 
 ### Separation: scene state vs simulation vs view
 
-<<<<<<< HEAD
-| Layer | Responsibility | Rules |
-|-------|----------------|--------|
-| **Model / scene** | Placed parts, wires, selection, optional history | **Plain TypeScript types**; updates via explicit actions or reducers; **no JSX** in model modules. |
-| **Graph** | Pins as nodes; wires + internal component edges | **Pure builders** from scene state; consumed only by simulation and hit-testing helpers. |
-| **Simulation** | Phase A: **closed path** from **+** to **−**, switches as breaks; Phase B: diode/LED direction; Phase C: optional numerics | **Pure functions**: `simulate(scene | graph, config) => SimResult`. **No DOM**, no React imports. |
-| **View** | React tree, SVG/Canvas layers, CSS, animation drivers | Reads **SimResult** + mode flags; **does not** reimplement connectivity inside components ad hoc. |
-
-**SimResult** must be rich enough for **electricity visualization** (see `README.md` — *Showing electricity*): per-edge **`isEnergized`**, optional **flow direction**, per-component display states, and whether **Test / power** is active.
-=======
 | Layer             | Responsibility                                                                                                             | Rules                                                                                              |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | **Model / scene** | Placed parts, wires, selection, optional history                                                                           | **Plain TypeScript types**; updates via explicit actions or reducers; **no JSX** in model modules. |
 | **Graph**         | Pins as nodes; wires + internal component edges                                                                            | **Pure builders** from scene state; consumed only by simulation and hit-testing helpers.           |
-| **Simulation**    | Phase A: **closed path** from **+** to **−**, switches as breaks; Phase B: diode/LED direction; Phase C: optional numerics | **Pure functions**: `simulate(...)` → `SimResult` (see `sim/` API). **No DOM**, no React imports.  |
+| **Simulation**    | Phase A: **closed path** from **+** to **ΓêÆ**, switches as breaks; Phase B: diode/LED direction; Phase C: optional numerics | **Pure functions**: `simulate(...)` ΓåÆ `SimResult` (see `sim/` API). **No DOM**, no React imports.  |
 | **View**          | React tree, SVG/Canvas layers, CSS, animation drivers                                                                      | Reads **SimResult** + mode flags; **does not** reimplement connectivity inside components ad hoc.  |
 
-**SimResult** must be rich enough for **electricity visualization** (see `README.md` — _Showing electricity_): per-edge **`isEnergized`**, optional **flow direction**, per-component display states, and whether **Test / power** is active.
->>>>>>> e1d5bf1 (updates)
+**SimResult** must be rich enough for **electricity visualization** (see `README.md` ΓÇö _Showing electricity_): per-edge **`isEnergized`**, optional **flow direction**, per-component display states, and whether **Test / power** is active.
 
 ### Conventional current and teaching
 
-- Default **animation and arrows** to **conventional current** (**+** → **−**).
+- Default **animation and arrows** to **conventional current** (**+** ΓåÆ **ΓêÆ**).
 - **`prefers-reduced-motion: reduce`:** replace **infinite** dash/gradient motion with **static** energized styling; keep **semantic** state in text/icons/ARIA.
 
-<<<<<<< HEAD
-### Alignment with the Flutter track
-
-- **Rules of “working”** and phase ordering should **match** `../flutter/README.md` unless a deliberate divergence is documented in both places.
-- **Shared vocabulary** (`PinId`, `WireId`, component kinds) helps porting and documentation.
-=======
 ### Domain consistency and documentation
 
-- **Rules of “working”** and phase ordering are **documented** in **`README.md`** at the project root; update docs when behavior changes.
+- **Rules of ΓÇ£workingΓÇ¥** and phase ordering are **documented** in **`README.md`** at the project root; update docs when behavior changes.
 - **Shared vocabulary** (`PinId`, `WireId`, component kinds) and a **single** `simulate(...)` entry point keep the model, graph, and UI coherent and testable.
 - Prefer **machine-checkable** rules: **unit tests** for `sim/` and `graph/` instead of re-stating connectivity or polarity logic in React components.
->>>>>>> e1d5bf1 (updates)
 
 ---
 
 ## Recommended stack (when the project is initialized)
 
-<<<<<<< HEAD
-| Piece | Default choice | Notes |
-|-------|----------------|--------|
-| **Bundler** | **Vite** | Fast HMR; good TypeScript defaults. |
-| **UI** | **React 18+** with **TypeScript** (`strict: true`) | Functional components + hooks. |
-| **Styling** | **CSS Modules** or **Tailwind** (team choice) | Consistent tokens for wire idle/live; avoid inline style churn on hot paths if a CSS class suffices. |
-| **SVG** | Primary for **wires** and scalable parts | Animate via `stroke-dashoffset`, filters, or `requestAnimationFrame` phase; see Visualization. |
-| **Canvas** | Optional second layer | Use for **many** segments or particle effects; often pair with **SVG overlay** for hit-testing unless you implement full picking in canvas. |
-| **Lint** | **ESLint** + **TypeScript-eslint** + **Prettier** | Enforce hooks rules and consistent formatting. |
-=======
 | Piece       | Default choice                                     | Notes                                                                                                                                       |
 | ----------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Bundler** | **Vite**                                           | Fast HMR; good TypeScript defaults.                                                                                                         |
@@ -114,9 +68,8 @@ Assume the user understands programming but may need **short explanations** of R
 | **SVG**     | Primary for **wires** and scalable parts           | Animate via `stroke-dashoffset`, filters, or `requestAnimationFrame` phase; see Visualization.                                              |
 | **Canvas**  | Optional second layer                              | Use for **many** segments or particle effects; often pair with **SVG overlay** for hit-testing unless you implement full picking in canvas. |
 | **Lint**    | **ESLint** + **TypeScript-eslint** + **Prettier**  | Enforce hooks rules and consistent formatting.                                                                                              |
->>>>>>> e1d5bf1 (updates)
 
-**Vue** is an acceptable substitute for React only if the repository **standardizes** on it—mirror the same separation rules (pure sim, typed models).
+**Vue** is an acceptable substitute for React only if the repository **standardizes** on itΓÇömirror the same separation rules (pure sim, typed models).
 
 ---
 
@@ -126,7 +79,7 @@ Assume the user understands programming but may need **short explanations** of R
 src/
   model/          # types, ids, scene state, reducers
   graph/          # buildGraph(scene), helpers
-  sim/            # phaseA.ts, phaseB.ts, index.ts — pure
+  sim/            # phaseA.ts, phaseB.ts, index.ts ΓÇö pure
   ui/
     board/        # Board, grid, transforms, zoom/pan
     palette/      # Parts list, drag sources
@@ -153,9 +106,9 @@ Names are indicative; **keep `sim/` free of React imports.**
 ## React rules
 
 - **Default to pure presentational components** receiving data via props; lift state to **`useReducer`**, **Context**, or a **small store** (e.g. Zustand) only when needed.
-- **`useMemo` / `useCallback`:** use for **referential stability** when passing callbacks to **memoized** children or foreign libraries—not everywhere by default.
+- **`useMemo` / `useCallback`:** use for **referential stability** when passing callbacks to **memoized** children or foreign librariesΓÇönot everywhere by default.
 - **`React.memo`:** for **expensive** subtrees (e.g. large part lists) when profiling shows benefit.
-- **Do not** drive **60fps** animation by **React state updates every frame** for all wires—prefer **CSS animation** on a class, **`requestAnimationFrame`** updating a **ref** + CSS variable or SVG attribute on a **minimal** subtree, or **Canvas** rAF loop.
+- **Do not** drive **60fps** animation by **React state updates every frame** for all wiresΓÇöprefer **CSS animation** on a class, **`requestAnimationFrame`** updating a **ref** + CSS variable or SVG attribute on a **minimal** subtree, or **Canvas** rAF loop.
 - **Keys:** stable ids (`wireId`, `partId`) for lists; never index-as-key for dynamic lists.
 
 ### Concurrent features
@@ -166,29 +119,21 @@ Names are indicative; **keep `sim/` free of React imports.**
 
 ## SVG vs Canvas (decision guide)
 
-<<<<<<< HEAD
-| Use SVG when | Use Canvas when |
-|--------------|-----------------|
-| Moderate wire count, DOM **accessibility** matters, **`stroke-dashoffset`** animation is enough | Thousands of segments, **particle** fields, or custom shaders |
-| You need **vector-effect** / crisp zoom | You accept **custom hit-testing** or hybrid overlay |
-| **Two-layer** wire (glow + stroke) is straightforward | Single rAF paint loop is simpler than huge SVG trees |
-=======
 | Use SVG when                                                                                    | Use Canvas when                                               |
 | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
 | Moderate wire count, DOM **accessibility** matters, **`stroke-dashoffset`** animation is enough | Thousands of segments, **particle** fields, or custom shaders |
 | You need **vector-effect** / crisp zoom                                                         | You accept **custom hit-testing** or hybrid overlay           |
 | **Two-layer** wire (glow + stroke) is straightforward                                           | Single rAF paint loop is simpler than huge SVG trees          |
->>>>>>> e1d5bf1 (updates)
 
-**Hybrid:** Canvas **under** for animated glow; **SVG overlay** for **interactive** wire strokes and pins—document hit-testing clearly.
+**Hybrid:** Canvas **under** for animated glow; **SVG overlay** for **interactive** wire strokes and pinsΓÇödocument hit-testing clearly.
 
 ---
 
 ## Wiring, coordinates, and interaction
 
-- **Single source of truth** for **board transform** (pan/zoom scale) — typically a matrix or `{ scale, tx, ty }` in state or refs; convert **screen ↔ board** in one utility module.
-- **Pin hit targets:** meet **minimum** touch size (e.g. **44×44 px** CSS) using **invisible** circles or padding even if the visual pin is smaller.
-- **Wire creation:** explicit modes (click pin A → click pin B) or drag-to-connect; **cancel** with Escape; **delete** wire with clear affordance.
+- **Single source of truth** for **board transform** (pan/zoom scale) ΓÇö typically a matrix or `{ scale, tx, ty }` in state or refs; convert **screen Γåö board** in one utility module.
+- **Pin hit targets:** meet **minimum** touch size (e.g. **44├ù44 px** CSS) using **invisible** circles or padding even if the visual pin is smaller.
+- **Wire creation:** explicit modes (click pin A ΓåÆ click pin B) or drag-to-connect; **cancel** with Escape; **delete** wire with clear affordance.
 - **Path `d` strings:** memoize from pin positions and bend points; **invalidate** only when geometry changes.
 
 ---
@@ -196,9 +141,9 @@ Names are indicative; **keep `sim/` free of React imports.**
 ## Visualization and animation (electricity)
 
 - **Layered strokes:** glow + crisp line per wire; see `README.md`.
-- **CSS:** prefer **`@media (prefers-reduced-motion: reduce)`** to disable **infinite** animations; provide **static** “live” appearance.
+- **CSS:** prefer **`@media (prefers-reduced-motion: reduce)`** to disable **infinite** animations; provide **static** ΓÇ£liveΓÇ¥ appearance.
 - **SVG filters:** watch **performance** on low-end mobile; test with **throttled** CPU in DevTools.
-- **Do not** animate **hue** alone to indicate danger vs success—pair with **text** or **icons**.
+- **Do not** animate **hue** alone to indicate danger vs successΓÇöpair with **text** or **icons**.
 
 ---
 
@@ -207,13 +152,13 @@ Names are indicative; **keep `sim/` free of React imports.**
 - **`sim/`** functions are **deterministic** and **side-effect free** (no `fetch`, no `Date.now()` for logic unless modeling time explicitly).
 - **Phase A** covered by **unit tests**: simple graphs, open switch, disconnected nodes.
 - **Phase B:** explicit **edge cases** in tests (reverse LED).
-- Export a **single** `simulate(...)` or `runPhaseA(...)` API surface used by the UI—avoid **scattered** ad hoc checks in components.
+- Export a **single** `simulate(...)` or `runPhaseA(...)` API surface used by the UIΓÇöavoid **scattered** ad hoc checks in components.
 
 ---
 
 ## Styling and design tokens
 
-- **CSS variables** or **Tailwind theme** for **wire idle**, **wire live**, **glow**, **board background**, **accent**—avoid hardcoding hex in **every** component.
+- **CSS variables** or **Tailwind theme** for **wire idle**, **wire live**, **glow**, **board background**, **accent**ΓÇöavoid hardcoding hex in **every** component.
 - **Responsive:** palette may **collapse** to bottom sheet on narrow viewports; board must **not** overflow horizontally without intent.
 
 ---
@@ -226,7 +171,7 @@ Names are indicative; **keep `sim/` free of React imports.**
 
 ## Testing
 
-- **Vitest** (or Jest) for **`sim/`** and **`graph/`** — fast, no DOM.
+- **Vitest** (or Jest) for **`sim/`** and **`graph/`** ΓÇö fast, no DOM.
 - **React Testing Library** for **user-visible** behavior: run test, assert **semantics** / text / ARIA.
 - **E2E** (Playwright): optional for full drag-and-wire flows once stable.
 
@@ -235,7 +180,7 @@ Names are indicative; **keep `sim/` free of React imports.**
 ## Linting and formatting
 
 - **ESLint** with **`eslint-plugin-react-hooks`**; **Prettier** for formatting; **typecheck** in CI (`tsc -b` or `vite build`).
-- **No** `console.log` in committed code paths intended for production—use a **small logger** or **debug** flag.
+- **No** `console.log` in committed code paths intended for productionΓÇöuse a **small logger** or **debug** flag.
 
 ---
 
@@ -264,51 +209,30 @@ Names are indicative; **keep `sim/` free of React imports.**
 
 ## What to avoid
 
-- **Simulation logic** inside `useEffect` without a clear dependency story—prefer **derived** state from scene + explicit **Run test** action.
+- **Simulation logic** inside `useEffect` without a clear dependency storyΓÇöprefer **derived** state from scene + explicit **Run test** action.
 - **Re-rendering the full board** on every `requestAnimationFrame` tick.
-<<<<<<< HEAD
-- **Duplicating** circuit rules between `web/` and `flutter/` without a **spec** or **shared test vectors** (future improvement).
-=======
-- **Duplicating** circuit rules outside **`sim/`** (ad hoc connectivity or polarity checks in components) instead of consuming **SimResult**—causes drift and bugs.
->>>>>>> e1d5bf1 (updates)
-- **Treating** SVG and Canvas **interchangeably** in the same code path without an **abstraction**—leads to inconsistent hit-testing.
+- **Duplicating** circuit rules outside **`sim/`** (ad hoc connectivity or polarity checks in components) instead of consuming **SimResult**ΓÇöcauses drift and bugs.
+- **Treating** SVG and Canvas **interchangeably** in the same code path without an **abstraction**ΓÇöleads to inconsistent hit-testing.
 
 ---
 
-## Quick reference — files to read first
+## Quick reference ΓÇö files to read first
 
-<<<<<<< HEAD
-1. `web/README.md` — vision, phases, electricity visualization, stack notes.
-2. This file — Part 1 (project rules) and Part 2 (embedded general TS/React/Web guide).
-=======
-1. `README.md` (project root) — vision, phases, electricity visualization, stack notes.
-2. This file — Part 1 (project rules) and Part 2 (embedded general TS/React guide).
->>>>>>> e1d5bf1 (updates)
-3. `src/sim/` and `src/model/` (once scaffolded) — source of truth for behavior.
+1. `README.md` (project root) ΓÇö vision, phases, electricity visualization, stack notes.
+2. This file ΓÇö Part 1 (project rules) and Part 2 (embedded general TS/React guide).
+3. `src/sim/` and `src/model/` (once scaffolded) ΓÇö source of truth for behavior.
 
 ---
 
-<<<<<<< HEAD
-## Part 2 — Embedded: TypeScript, React & Web AI rules (general reference)
-
-The content below is the **canonical general-purpose** web stack guide for contributors and AI. It complements Part 1 with tooling, React/TypeScript patterns, styling, testing, and security.
-
-**Precedence:** Part 1 overrides Part 2 where they conflict—for example Part 1 forbids React imports in `sim/`, standardizes **SVG-first** wires for this product, and requires **behavior alignment** with `../flutter/README.md`.
-
----
-
-# AI rules for TypeScript, React & Web (embedded reference)
-=======
-## Part 2 — Embedded: TypeScript & React AI rules (general reference)
+## Part 2 ΓÇö Embedded: TypeScript & React AI rules (general reference)
 
 The content below is the **canonical general-purpose** front-end stack guide for contributors and AI. It complements Part 1 with tooling, React/TypeScript patterns, styling, testing, and security.
 
-**Precedence:** Part 1 overrides Part 2 where they conflict—for example Part 1 forbids React imports in `sim/`, standardizes **SVG-first** wires for this product, and ties **phase behavior** to `README.md`.
+**Precedence:** Part 1 overrides Part 2 where they conflictΓÇöfor example Part 1 forbids React imports in `sim/`, standardizes **SVG-first** wires for this product, and ties **phase behavior** to `README.md`.
 
 ---
 
 # AI rules for TypeScript & React (embedded reference)
->>>>>>> e1d5bf1 (updates)
 
 You are an expert in **TypeScript**, **modern React** (18+), and **browser
 platform APIs**, with strong experience building **accessible**, **performant**
@@ -320,21 +244,6 @@ and **testable** architecture. You are comfortable with **Vite**, **ESLint**,
 
 ## Interaction Guidelines
 
-<<<<<<< HEAD
-* **User persona:** Assume the user understands programming but may be new to
-  the React ecosystem or to strict TypeScript.
-* **Explanations:** When generating code, briefly explain non-obvious TypeScript
-  (discriminated unions, narrowing, `satisfies`) or React patterns (effects,
-  refs, concurrent rendering) when they matter for correctness.
-* **Clarification:** If a request is ambiguous, ask about **browser targets**,
-  **state management preference**, and **bundler** (Vite is the default for this
-  repo unless stated otherwise).
-* **Dependencies:** When suggesting npm packages, explain **bundle impact**,
-  **maintenance**, and **overlap** with existing dependencies.
-* **Formatting:** Use **Prettier** and project ESLint rules; run **`npm run
-  lint`** and **`tsc --noEmit`** (or equivalents) before concluding a task.
-* **Fixes:** Prefer `eslint --fix` for auto-fixable issues; resolve TypeScript
-=======
 - **User persona:** Assume the user understands programming but may be new to
   the React ecosystem or to strict TypeScript.
 - **Explanations:** When generating code, briefly explain non-obvious TypeScript
@@ -348,57 +257,30 @@ and **testable** architecture. You are comfortable with **Vite**, **ESLint**,
 - **Formatting:** Use **Prettier** and project ESLint rules; run **`npm run
 lint`** and **`tsc --noEmit`** (or equivalents) before concluding a task.
 - **Fixes:** Prefer `eslint --fix` for auto-fixable issues; resolve TypeScript
->>>>>>> e1d5bf1 (updates)
   errors at the cause, not with `any`.
 
 ---
 
 ## Project structure (typical Vite + React + TS)
 
-<<<<<<< HEAD
-* **Entry:** `index.html`, `src/main.tsx`, `src/App.tsx`.
-* **Source layout:** Prefer **feature folders** or **layered** folders
-  (`model/`, `sim/`, `ui/`) as in Part 1 of this repo’s `AGENTS.md`.
-* **Public assets:** `public/` for static files; **import** assets from `src/`
-  when they should be hashed by the bundler.
-* **Environment:** Use `import.meta.env` (Vite) for build-time env; never commit
-=======
 - **Entry:** `index.html`, `src/main.tsx`, `src/App.tsx`.
 - **Source layout:** Prefer **feature folders** or **layered** folders
-  (`model/`, `sim/`, `ui/`) as in Part 1 of this repo’s `AGENTS.md`.
+  (`model/`, `sim/`, `ui/`) as in Part 1 of this repoΓÇÖs `AGENTS.md`.
 - **Public assets:** `public/` for static files; **import** assets from `src/`
   when they should be hashed by the bundler.
 - **Environment:** Use `import.meta.env` (Vite) for build-time env; never commit
->>>>>>> e1d5bf1 (updates)
   secrets.
 
 ---
 
 ## TypeScript: style and rigor
 
-<<<<<<< HEAD
-* **Strict mode:** Enable `"strict": true` in `tsconfig.json`; avoid `any`.
-  Use **`unknown`** at boundaries and **narrow** explicitly.
-* **Naming:** `PascalCase` for components and types, `camelCase` for values and
-  functions, `UPPER_SNAKE` only for true constants.
-* **Files:** `PascalCase.tsx` for components; **kebab-case** or **camelCase**
-  for utilities—**one convention per repo**, match existing code.
-* **Immutability:** Prefer **readonly** props and **readonly** arrays for
-  snapshots; use **immutable updates** (spread, `map`, `filter`) for state.
-* **Discriminated unions:** Model variants with a **literal `kind` or `type`
-  field**; use **`switch`** with **`never`** exhaustiveness checks.
-* **Branded types** for ids when confusion would cause bugs:
-  `type WireId = string & { readonly __brand: 'WireId' }`.
-* **Avoid** `!` non-null assertions unless the justification is obvious in
-  context.
-* **Effective TypeScript:** Follow
-=======
 - **Strict mode:** Enable `"strict": true` in `tsconfig.json`; avoid `any`.
   Use **`unknown`** at boundaries and **narrow** explicitly.
 - **Naming:** `PascalCase` for components and types, `camelCase` for values and
   functions, `UPPER_SNAKE` only for true constants.
 - **Files:** `PascalCase.tsx` for components; **kebab-case** or **camelCase**
-  for utilities—**one convention per repo**, match existing code.
+  for utilitiesΓÇö**one convention per repo**, match existing code.
 - **Immutability:** Prefer **readonly** props and **readonly** arrays for
   snapshots; use **immutable updates** (spread, `map`, `filter`) for state.
 - **Discriminated unions:** Model variants with a **literal `kind` or `type`
@@ -408,33 +290,13 @@ lint`** and **`tsc --noEmit`** (or equivalents) before concluding a task.
 - **Avoid** `!` non-null assertions unless the justification is obvious in
   context.
 - **Effective TypeScript:** Follow
->>>>>>> e1d5bf1 (updates)
-  [TypeScript Do’s and Don’ts](https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html)
+  [TypeScript DoΓÇÖs and DonΓÇÖts](https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html)
   and team `tsconfig` paths.
 
 ---
 
 ## React: principles
 
-<<<<<<< HEAD
-* **Composition:** Prefer **small components** and **composition** over
-  inheritance; avoid **HOCs** unless a library requires them.
-* **Hooks:** Follow the **rules of hooks**; list **complete dependency
-  arrays**; do not suppress `react-hooks/exhaustive-deps` without a comment
-  explaining why.
-* **Purity:** **Render** must be **idempotent**; avoid side effects during
-  render except where React documents them.
-* **Effects:** Use `useEffect` for **synchronization** with the outside world,
-  not for **deriving** values from props/state (compute during render or with
-  `useMemo` when expensive).
-* **Keys:** Stable **`key`** from entity ids for lists; **never** use array
-  index for dynamic lists that reorder.
-* **Refs:** Use `useRef` for **mutable boxes** and **DOM** handles; avoid
-  overusing refs for state that belongs in React state.
-* **Concurrent React:** Be aware of **Strict Mode** double-invocation in dev;
-  avoid relying on **mount-only** effects without cleanup for subscriptions.
-* **Performance:** **Profile first**; apply `memo`, `useMemo`, `useCallback`
-=======
 - **Composition:** Prefer **small components** and **composition** over
   inheritance; avoid **HOCs** unless a library requires them.
 - **Hooks:** Follow the **rules of hooks**; list **complete dependency
@@ -452,104 +314,59 @@ lint`** and **`tsc --noEmit`** (or equivalents) before concluding a task.
 - **Concurrent React:** Be aware of **Strict Mode** double-invocation in dev;
   avoid relying on **mount-only** effects without cleanup for subscriptions.
 - **Performance:** **Profile first**; apply `memo`, `useMemo`, `useCallback`
->>>>>>> e1d5bf1 (updates)
   when measurement shows benefit, not by default.
 
 ---
 
 ## State management
 
-<<<<<<< HEAD
-* **Local state:** `useState` / `useReducer` for component-local concerns.
-* **Shared state:** **Lift state** or **Context** for moderate sharing; **Zustand**
-  / **Jotai** / **Redux** only when complexity warrants—**one** global pattern
-  per app.
-* **External stores:** If subscribing outside React, prefer **`useSyncExternalStore`**
-  to avoid **tearing** under concurrent rendering.
-* **Server cache:** If later adding TanStack Query / SWR, keep **server state**
-=======
 - **Local state:** `useState` / `useReducer` for component-local concerns.
 - **Shared state:** **Lift state** or **Context** for moderate sharing; **Zustand**
-  / **Jotai** / **Redux** only when complexity warrants—**one** global pattern
+  / **Jotai** / **Redux** only when complexity warrantsΓÇö**one** global pattern
   per app.
 - **External stores:** If subscribing outside React, prefer **`useSyncExternalStore`**
   to avoid **tearing** under concurrent rendering.
 - **Server cache:** If later adding TanStack Query / SWR, keep **server state**
->>>>>>> e1d5bf1 (updates)
   separate from **editor/scene** state.
 
 ---
 
 ## Routing
 
-<<<<<<< HEAD
-* **React Router** (v6+): declarative routes, loaders where appropriate, nested
-  layouts. Part 1 of this repo may use a **single** workshop screen initially.
-* **URLs:** Use **path parameters** and **search params** intentionally; avoid
-=======
 - **React Router** (v6+): declarative routes, loaders where appropriate, nested
   layouts. Part 1 of this repo may use a **single** workshop screen initially.
 - **URLs:** Use **path parameters** and **search params** intentionally; avoid
->>>>>>> e1d5bf1 (updates)
   putting **large** state in the URL without compression/serialization design.
 
 ---
 
 ## Styling
 
-<<<<<<< HEAD
-* **CSS Modules** or **Tailwind**—match the repo; **avoid** inline styles for
-  large trees when a **class** or **design token** will do.
-* **Design tokens:** **CSS variables** (`:root`) or Tailwind theme for **colors**,
-  **spacing**, **radii**—especially **wire idle/live** in this product.
-* **Responsive:** **Mobile-first** breakpoints; test **palette** collapse and
-  **board** overflow.
-* **Dark mode:** If supported, use **`prefers-color-scheme`** or a class on
-=======
-- **CSS Modules** or **Tailwind**—match the repo; **avoid** inline styles for
+- **CSS Modules** or **Tailwind**ΓÇömatch the repo; **avoid** inline styles for
   large trees when a **class** or **design token** will do.
 - **Design tokens:** **CSS variables** (`:root`) or Tailwind theme for **colors**,
-  **spacing**, **radii**—especially **wire idle/live** in this product.
+  **spacing**, **radii**ΓÇöespecially **wire idle/live** in this product.
 - **Responsive:** **Mobile-first** breakpoints; test **palette** collapse and
   **board** overflow.
 - **Dark mode:** If supported, use **`prefers-color-scheme`** or a class on
->>>>>>> e1d5bf1 (updates)
   `documentElement`; keep **contrast** acceptable for text.
 
 ---
 
 ## SVG and Canvas
 
-<<<<<<< HEAD
-* **SVG:** Prefer for **wires**, **icons**, and **accessible** diagrams; use
-  **`stroke-dashoffset`** animation with respect to **`prefers-reduced-motion`**.
-* **Canvas:** Use when **particle counts** or **custom shaders** demand it;
-  often **combine** with **SVG** or **HTML** overlay for **hit-testing** and
-  **a11y**.
-* **Performance:** Minimize **DOM node** count for huge SVGs; consider
-=======
 - **SVG:** Prefer for **wires**, **icons**, and **accessible** diagrams; use
   **`stroke-dashoffset`** animation with respect to **`prefers-reduced-motion`**.
 - **Canvas:** Use when **particle counts** or **custom shaders** demand it;
   often **combine** with **SVG** or **HTML** overlay for **hit-testing** and
   **a11y**.
 - **Performance:** Minimize **DOM node** count for huge SVGs; consider
->>>>>>> e1d5bf1 (updates)
   **virtualization** or **canvas** for thousands of edges.
 
 ---
 
 ## Package management
 
-<<<<<<< HEAD
-* **One** package manager per repo (**npm**, **pnpm**, or **yarn**); commit
-  **lockfile**.
-* **Adding:** `npm install <pkg>` or `pnpm add`; prefer **exact** or **caret**
-  versions per team policy.
-* **Audit:** Run **`npm audit`** regularly; **do not** ignore **high** severity
-  in production paths without a plan.
-* **Duplicates:** Avoid two libraries for the same job (e.g. two date libs).
-=======
 - **One** package manager per repo (**npm**, **pnpm**, or **yarn**); commit
   **lockfile**.
 - **Adding:** `npm install <pkg>` or `pnpm add`; prefer **exact** or **caret**
@@ -557,24 +374,12 @@ lint`** and **`tsc --noEmit`** (or equivalents) before concluding a task.
 - **Audit:** Run **`npm audit`** regularly; **do not** ignore **high** severity
   in production paths without a plan.
 - **Duplicates:** Avoid two libraries for the same job (e.g. two date libs).
->>>>>>> e1d5bf1 (updates)
 
 ---
 
 ## Code quality
 
-<<<<<<< HEAD
-* **Separation:** **UI** vs **domain** vs **simulation**—simulation stays **pure**
-  (see Part 1).
-* **Functions:** Short, **single responsibility**; extract **pure helpers** for
-  testability.
-* **Errors:** Use **`Result`** patterns or **typed errors** at boundaries; do not
-  **swallow** errors in `catch` without logging.
-* **Async:** **`async`/`await`**; handle **rejection**; use **`AbortSignal`** for
-  cancellable fetch when applicable.
-* **Logging:** No raw **`console.log`** in production paths; use a **small
-=======
-- **Separation:** **UI** vs **domain** vs **simulation**—simulation stays **pure**
+- **Separation:** **UI** vs **domain** vs **simulation**ΓÇösimulation stays **pure**
   (see Part 1).
 - **Functions:** Short, **single responsibility**; extract **pure helpers** for
   testability.
@@ -583,118 +388,66 @@ lint`** and **`tsc --noEmit`** (or equivalents) before concluding a task.
 - **Async:** **`async`/`await`**; handle **rejection**; use **`AbortSignal`** for
   cancellable fetch when applicable.
 - **Logging:** No raw **`console.log`** in production paths; use a **small
->>>>>>> e1d5bf1 (updates)
   wrapper** that can be stripped or gated by env.
 
 ---
 
 ## ESLint and Prettier
 
-<<<<<<< HEAD
-* **ESLint:** `eslint-plugin-react-hooks`, `@typescript-eslint`, **import**
-  ordering if configured.
-* **Prettier:** Single source of formatting truth; **do not** fight Prettier in
-  review.
-* **CI:** Run **`lint`** and **`typecheck`** on every PR.
-=======
 - **ESLint:** `eslint-plugin-react-hooks`, `@typescript-eslint`, **import**
   ordering if configured.
 - **Prettier:** Single source of formatting truth; **do not** fight Prettier in
   review.
 - **CI:** Run **`lint`** and **`typecheck`** on every PR.
->>>>>>> e1d5bf1 (updates)
 
 ---
 
 ## Testing
 
-<<<<<<< HEAD
-* **Unit / integration:** **Vitest** (or Jest) for **pure** `sim/` and `graph/`
-  modules—**no** JSDOM required.
-* **Component:** **React Testing Library**—assert **behavior** and
-  **accessibility**, not implementation details.
-* **E2E:** **Playwright** or **Cypress** for drag/wire flows when stable.
-* **Patterns:** **Arrange–Act–Assert**; prefer **userEvent** over **fireEvent**
-=======
 - **Unit / integration:** **Vitest** (or Jest) for **pure** `sim/` and `graph/`
-  modules—**no** JSDOM required.
-- **Component:** **React Testing Library**—assert **behavior** and
+  modulesΓÇö**no** JSDOM required.
+- **Component:** **React Testing Library**ΓÇöassert **behavior** and
   **accessibility**, not implementation details.
 - **E2E:** **Playwright** or **Cypress** for drag/wire flows when stable.
-- **Patterns:** **Arrange–Act–Assert**; prefer **userEvent** over **fireEvent**
->>>>>>> e1d5bf1 (updates)
+- **Patterns:** **ArrangeΓÇôActΓÇôAssert**; prefer **userEvent** over **fireEvent**
   where RTL recommends it.
 
 ---
 
-<<<<<<< HEAD
-## Visual design and UX (web)
-
-* **Typography:** Scale from a **modular scale**; respect **user font size**
-  settings (`rem`).
-* **Motion:** Honor **`prefers-reduced-motion`**; provide **non-motion** cues.
-* **Touch targets:** **≥ 44×44 CSS px** for interactive targets (WCAG
-  recommendation).
-* **Feedback:** **Loading**, **error**, and **success** states for async
-=======
 ## Visual design and UX (browser)
 
 - **Typography:** Scale from a **modular scale**; respect **user font size**
   settings (`rem`).
 - **Motion:** Honor **`prefers-reduced-motion`**; provide **non-motion** cues.
-- **Touch targets:** **≥ 44×44 CSS px** for interactive targets (WCAG
+- **Touch targets:** **ΓëÑ 44├ù44 CSS px** for interactive targets (WCAG
   recommendation).
 - **Feedback:** **Loading**, **error**, and **success** states for async
->>>>>>> e1d5bf1 (updates)
   actions.
 
 ---
 
 ## Performance
 
-<<<<<<< HEAD
-* **Bundle:** **Code-split** routes with `React.lazy` + `Suspense` when multiple
-  routes exist; analyze with **rollup-plugin-visualizer** if needed.
-* **Rendering:** Avoid **unnecessary** parent state updates; **batch** where
-  React 18 **automatic batching** helps.
-* **Animation:** Prefer **CSS** transforms/opacity for **compositor** work;
-=======
 - **Bundle:** **Code-split** routes with `React.lazy` + `Suspense` when multiple
   routes exist; analyze with **rollup-plugin-visualizer** if needed.
 - **Rendering:** Avoid **unnecessary** parent state updates; **batch** where
   React 18 **automatic batching** helps.
 - **Animation:** Prefer **CSS** transforms/opacity for **compositor** work;
->>>>>>> e1d5bf1 (updates)
   avoid **layout thrashing** (read/write interleaving) in rAF loops.
 
 ---
 
 ## Documentation
 
-<<<<<<< HEAD
-* **Public APIs:** **TSDoc** (`/** */`) for exported functions and types.
-* **README:** Keep **feature** READMEs updated when behavior changes.
-* **Why comments:** Explain **non-obvious** invariants and **sim**
-=======
 - **Public APIs:** **TSDoc** (`/** */`) for exported functions and types.
 - **README:** Keep **feature** READMEs updated when behavior changes.
 - **Why comments:** Explain **non-obvious** invariants and **sim**
->>>>>>> e1d5bf1 (updates)
-  simplifications—not what the code obviously does.
+  simplificationsΓÇönot what the code obviously does.
 
 ---
 
 ## Accessibility (a11y)
 
-<<<<<<< HEAD
-* **Semantic HTML:** **`button`**, **`nav`**, **`main`**, headings in **order**.
-* **ARIA:** Use when HTML **semantics** are insufficient; **avoid** redundant
-  `role` on native elements.
-* **Keyboard:** **Tab** order, **Escape** to dismiss, **focus trap** in modals.
-* **Focus:** **Visible** focus styles; never **`outline: none`** without
-  replacement.
-* **Live regions:** **`aria-live`** for **dynamic** status (e.g. circuit test
-=======
 - **Semantic HTML:** **`button`**, **`nav`**, **`main`**, headings in **order**.
 - **ARIA:** Use when HTML **semantics** are insufficient; **avoid** redundant
   `role` on native elements.
@@ -702,62 +455,37 @@ lint`** and **`tsc --noEmit`** (or equivalents) before concluding a task.
 - **Focus:** **Visible** focus styles; never **`outline: none`** without
   replacement.
 - **Live regions:** **`aria-live`** for **dynamic** status (e.g. circuit test
->>>>>>> e1d5bf1 (updates)
-  result)—**polite** by default.
+  result)ΓÇö**polite** by default.
 
 ---
 
 ## Security
 
-<<<<<<< HEAD
-* **XSS:** **Sanitize** HTML if ever rendering user strings to DOM; prefer
-  **React text** nodes over **`dangerouslySetInnerHTML`**.
-* **Dependencies:** Minimize **supply-chain** risk; **pin** critical build tools.
-* **Env:** Never expose **secrets** in client bundles.
-=======
 - **XSS:** **Sanitize** HTML if ever rendering user strings to DOM; prefer
   **React text** nodes over **`dangerouslySetInnerHTML`**.
 - **Dependencies:** Minimize **supply-chain** risk; **pin** critical build tools.
 - **Env:** Never expose **secrets** in client bundles.
->>>>>>> e1d5bf1 (updates)
 
 ---
 
 ## Browser support
 
-<<<<<<< HEAD
-* **Baseline:** Define **minimum** browsers (e.g. last two Chrome, Firefox,
-  Safari, Edge) and test **Safari** for SVG/CSS quirks.
-* **Polyfills:** Add only when **data** shows need; Vite + modern targets often
-=======
 - **Baseline:** Define **minimum** browsers (e.g. last two Chrome, Firefox,
   Safari, Edge) and test **Safari** for SVG/CSS quirks.
 - **Polyfills:** Add only when **data** shows need; Vite + modern targets often
->>>>>>> e1d5bf1 (updates)
   need none.
 
 ---
 
 ## API design (internal modules)
 
-<<<<<<< HEAD
-* **Narrow exports:** Prefer **named exports**; avoid **default export** soup
-  unless a file is truly single-purpose.
-* **Pure sim API:** **`simulate(input) => output`**—**no** hidden globals.
-=======
 - **Narrow exports:** Prefer **named exports**; avoid **default export** soup
   unless a file is truly single-purpose.
-- **Pure sim API:** **`simulate(input) => output`**—**no** hidden globals.
->>>>>>> e1d5bf1 (updates)
+- **Pure sim API:** **`simulate(input) => output`**ΓÇö**no** hidden globals.
 
 ---
 
 ## Git and collaboration
 
-<<<<<<< HEAD
-* **Commits:** **Small**, **focused** commits with messages that explain **why**.
-* **PRs:** Describe **behavior** change and **test** plan; screenshots for UI.
-=======
 - **Commits:** **Small**, **focused** commits with messages that explain **why**.
 - **PRs:** Describe **behavior** change and **test** plan; screenshots for UI.
->>>>>>> e1d5bf1 (updates)
