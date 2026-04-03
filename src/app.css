@@ -102,6 +102,13 @@ body {
   margin-top: 0.65rem;
 }
 
+<<<<<<< HEAD
+=======
+.app-settings-label--fourth {
+  margin-top: 0.65rem;
+}
+
+>>>>>>> e1d5bf1 (updates)
 .app-settings-segment {
   display: flex;
   align-items: stretch;
@@ -435,9 +442,47 @@ body {
   stroke-width: 3;
 }
 
+<<<<<<< HEAD
 /* AC mode: slightly cooler idle wires (house-wiring palette cue). */
 .wire-layer--ac .wire-stroke--idle {
   stroke: #5c6a78;
+=======
+/* Per-kind conductor colors (idle + live use same hue family). */
+.wire-stroke--kind-live.wire-stroke--idle {
+  stroke: #1e1e1e;
+}
+
+.wire-stroke--kind-neutral.wire-stroke--idle {
+  stroke: #1565c0;
+}
+
+.wire-stroke--kind-switched.wire-stroke--idle {
+  stroke: #c62828;
+}
+
+.wire-stroke--kind-live.wire-stroke--live {
+  stroke: #2d2d2d;
+}
+
+.wire-stroke--kind-neutral.wire-stroke--live {
+  stroke: #1976d2;
+}
+
+.wire-stroke--kind-switched.wire-stroke--live {
+  stroke: #e53935;
+}
+
+.wire-stroke--kind-live.wire-stroke--glow {
+  stroke: rgba(45, 45, 45, 0.55);
+}
+
+.wire-stroke--kind-neutral.wire-stroke--glow {
+  stroke: rgba(25, 118, 210, 0.55);
+}
+
+.wire-stroke--kind-switched.wire-stroke--glow {
+  stroke: rgba(229, 57, 53, 0.55);
+>>>>>>> e1d5bf1 (updates)
 }
 
 .wire-stroke--live {
@@ -469,6 +514,53 @@ body {
   }
 }
 
+<<<<<<< HEAD
+=======
+.wire-color-picker {
+  pointer-events: auto;
+}
+
+.wire-color-picker-inner {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0.35rem 0.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-board-edge);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.wire-color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(244, 237, 228, 0.35);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.wire-color-swatch--live {
+  background: #1e1e1e;
+}
+
+.wire-color-swatch--neutral {
+  background: #1565c0;
+}
+
+.wire-color-swatch--switched {
+  background: #c62828;
+}
+
+.wire-color-swatch:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+>>>>>>> e1d5bf1 (updates)
 /* Per-part actions: visible on hover (mouse) or always on coarse/touch pointers. */
 .part-actions-inner {
   height: 100%;
@@ -707,6 +799,17 @@ body {
   stroke-width: 1;
 }
 
+<<<<<<< HEAD
+=======
+.part-pin-label {
+  fill: #c4b8a8;
+  font: 700 10px/1 var(--font-ui);
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  user-select: none;
+}
+
+>>>>>>> e1d5bf1 (updates)
 .sr-only {
   position: absolute;
   width: 1px;

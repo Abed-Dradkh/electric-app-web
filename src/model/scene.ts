@@ -7,6 +7,10 @@ export function initialScene(): Scene {
     parts: [],
     wires: [],
     wireDraftFrom: null,
+<<<<<<< HEAD
+=======
+    wireDraftKind: 'live',
+>>>>>>> e1d5bf1 (updates)
     nextPartIndex: 1,
     nextWireIndex: 1,
   };
@@ -73,11 +77,27 @@ export function sceneReducer(state: Scene, action: SceneAction): Scene {
         ),
       };
     case 'beginWire':
+<<<<<<< HEAD
       return { ...state, wireDraftFrom: action.pin };
     case 'completeWire': {
       const a = state.wireDraftFrom;
       if (a === null || a === action.pin) {
         return { ...state, wireDraftFrom: null };
+=======
+      return {
+        ...state,
+        wireDraftFrom: action.pin,
+        wireDraftKind: action.kind,
+      };
+    case 'completeWire': {
+      const a = state.wireDraftFrom;
+      if (a === null || a === action.pin) {
+        return {
+          ...state,
+          wireDraftFrom: null,
+          wireDraftKind: 'live',
+        };
+>>>>>>> e1d5bf1 (updates)
       }
       const exists = state.wires.some(
         (w) =>
@@ -85,19 +105,43 @@ export function sceneReducer(state: Scene, action: SceneAction): Scene {
           (w.pinA === action.pin && w.pinB === a),
       );
       if (exists) {
+<<<<<<< HEAD
         return { ...state, wireDraftFrom: null };
       }
       const wid = wireId(`w${state.nextWireIndex}`);
       const wire = { id: wid, pinA: a, pinB: action.pin };
+=======
+        return {
+          ...state,
+          wireDraftFrom: null,
+          wireDraftKind: 'live',
+        };
+      }
+      const wid = wireId(`w${state.nextWireIndex}`);
+      const wire = {
+        id: wid,
+        pinA: a,
+        pinB: action.pin,
+        kind: state.wireDraftKind,
+      };
+>>>>>>> e1d5bf1 (updates)
       return {
         ...state,
         wires: [...state.wires, wire],
         wireDraftFrom: null,
+<<<<<<< HEAD
+=======
+        wireDraftKind: 'live',
+>>>>>>> e1d5bf1 (updates)
         nextWireIndex: state.nextWireIndex + 1,
       };
     }
     case 'cancelWire':
+<<<<<<< HEAD
       return { ...state, wireDraftFrom: null };
+=======
+      return { ...state, wireDraftFrom: null, wireDraftKind: 'live' };
+>>>>>>> e1d5bf1 (updates)
     case 'deleteWire':
       return {
         ...state,
@@ -117,6 +161,13 @@ export function sceneReducer(state: Scene, action: SceneAction): Scene {
           state.wireDraftFrom && pinSet.has(state.wireDraftFrom)
             ? null
             : state.wireDraftFrom,
+<<<<<<< HEAD
+=======
+        wireDraftKind:
+          state.wireDraftFrom && pinSet.has(state.wireDraftFrom)
+            ? 'live'
+            : state.wireDraftKind,
+>>>>>>> e1d5bf1 (updates)
       };
     }
     case 'deleteParts': {
@@ -140,6 +191,13 @@ export function sceneReducer(state: Scene, action: SceneAction): Scene {
           state.wireDraftFrom && pinSet.has(state.wireDraftFrom)
             ? null
             : state.wireDraftFrom,
+<<<<<<< HEAD
+=======
+        wireDraftKind:
+          state.wireDraftFrom && pinSet.has(state.wireDraftFrom)
+            ? 'live'
+            : state.wireDraftKind,
+>>>>>>> e1d5bf1 (updates)
       };
     }
     default: {

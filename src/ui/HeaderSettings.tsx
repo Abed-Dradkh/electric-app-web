@@ -30,6 +30,11 @@ export type HeaderSettingsProps = {
   readonly onHoverBarPositionChange: (value: PartHoverBarPosition) => void;
   readonly rotateHandlePosition: RotateHandlePosition;
   readonly onRotateHandlePositionChange: (value: RotateHandlePosition) => void;
+<<<<<<< HEAD
+=======
+  readonly pinLabelsVisible: boolean;
+  readonly onPinLabelsVisibleChange: (visible: boolean) => void;
+>>>>>>> e1d5bf1 (updates)
 };
 
 export function HeaderSettings({
@@ -39,12 +44,21 @@ export function HeaderSettings({
   onHoverBarPositionChange,
   rotateHandlePosition,
   onRotateHandlePositionChange,
+<<<<<<< HEAD
+=======
+  pinLabelsVisible,
+  onPinLabelsVisibleChange,
+>>>>>>> e1d5bf1 (updates)
 }: HeaderSettingsProps) {
   const { t, i18n } = useTranslation();
   const wrapRef = useRef<HTMLDivElement>(null);
   const labelLangId = useId();
   const labelBarId = useId();
   const labelRotateId = useId();
+<<<<<<< HEAD
+=======
+  const labelPinLabelsId = useId();
+>>>>>>> e1d5bf1 (updates)
 
   useEffect(() => {
     if (!open) return;
@@ -193,6 +207,46 @@ export function HeaderSettings({
               {t('settings.right')}
             </button>
           </div>
+<<<<<<< HEAD
+=======
+          <p
+            id={labelPinLabelsId}
+            className="app-settings-label app-settings-label--fourth"
+          >
+            {t('settings.pinLabelsLabel')}
+          </p>
+          <div
+            className="app-settings-segment"
+            role="group"
+            aria-labelledby={labelPinLabelsId}
+            dir="ltr"
+          >
+            <button
+              type="button"
+              className={
+                pinLabelsVisible
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={pinLabelsVisible}
+              onClick={() => onPinLabelsVisibleChange(true)}
+            >
+              {t('settings.pinLabelsShow')}
+            </button>
+            <button
+              type="button"
+              className={
+                !pinLabelsVisible
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={!pinLabelsVisible}
+              onClick={() => onPinLabelsVisibleChange(false)}
+            >
+              {t('settings.pinLabelsHide')}
+            </button>
+          </div>
+>>>>>>> e1d5bf1 (updates)
         </div>
       ) : null}
     </div>

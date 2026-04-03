@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import type { MouseEvent, PointerEvent } from 'react';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -7,15 +8,38 @@ import {
   makePinId,
   pinOffset,
   type PinRole,
+=======
+import type { TFunction } from 'i18next';
+import type { MouseEvent, PointerEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { PinId } from '../../model/ids';
+import {
+    PIN_ROLES,
+    makePinId,
+    pinOffset,
+    type PinRole,
+>>>>>>> e1d5bf1 (updates)
 } from '../../model/pinLayout';
 import type { Part } from '../../model/types';
 import type { PartSimHint } from '../../sim/types';
 import {
+<<<<<<< HEAD
   PART_ROTATE_HANDLE_BOX,
   partHoverBarBox,
   type PartHoverBarPosition,
   type RotateHandlePosition,
 } from '../partHoverLayout';
+=======
+    PART_ROTATE_HANDLE_BOX,
+    partHoverBarBox,
+    type PartHoverBarPosition,
+    type RotateHandlePosition,
+} from '../partHoverLayout';
+import {
+    pinConnectorLabelPlacement,
+    pinConnectorShortLabel,
+} from './pinConnectorLabel';
+>>>>>>> e1d5bf1 (updates)
 
 export type PartViewProps = {
   readonly part: Part;
@@ -23,6 +47,10 @@ export type PartViewProps = {
   readonly hint: PartSimHint | undefined;
   readonly testActive: boolean;
   readonly draftPin: PinId | null;
+<<<<<<< HEAD
+=======
+  readonly showPinLabels: boolean;
+>>>>>>> e1d5bf1 (updates)
   readonly hoverBarPosition: PartHoverBarPosition;
   readonly rotateHandlePosition: RotateHandlePosition;
   readonly onPinClick: (pin: PinId) => void;
@@ -45,6 +73,10 @@ export function PartView({
   hint,
   testActive,
   draftPin,
+<<<<<<< HEAD
+=======
+  showPinLabels,
+>>>>>>> e1d5bf1 (updates)
   hoverBarPosition,
   rotateHandlePosition,
   onPinClick,
@@ -60,10 +92,15 @@ export function PartView({
   const placementClass = `part-actions-inner--${hoverBarPosition}`;
   const roles = PIN_ROLES[part.kind];
   const label = partLabel(t, part);
+<<<<<<< HEAD
   const isSupply =
     part.kind === 'battery' || part.kind === 'ac_supply';
   const loadOn =
     testActive && hint?.loadEnergized && !isSupply;
+=======
+  const isSupply = part.kind === 'battery' || part.kind === 'ac_supply';
+  const loadOn = testActive && hint?.loadEnergized && !isSupply;
+>>>>>>> e1d5bf1 (updates)
   const batOn =
     testActive &&
     hint?.batterySupplying &&
@@ -207,6 +244,11 @@ export function PartView({
           const o = pinOffset(part, role);
           const id = makePinId(part.id, role);
           const selected = draftPin === id;
+<<<<<<< HEAD
+=======
+          const pinShort = pinConnectorShortLabel(t, part.kind, role);
+          const pl = pinConnectorLabelPlacement(o.x, o.y);
+>>>>>>> e1d5bf1 (updates)
           return (
             <g key={role} transform={`translate(${o.x},${o.y})`}>
               <circle
@@ -227,6 +269,22 @@ export function PartView({
                 }}
               />
               <circle r={5} className="pin-dot" pointerEvents="none" />
+<<<<<<< HEAD
+=======
+              {showPinLabels ? (
+                <text
+                  className="part-pin-label"
+                  x={pl.lx - o.x}
+                  y={pl.ly - o.y}
+                  textAnchor={pl.textAnchor}
+                  dominantBaseline={pl.dominantBaseline}
+                  pointerEvents="none"
+                  aria-hidden
+                >
+                  {pinShort}
+                </text>
+              ) : null}
+>>>>>>> e1d5bf1 (updates)
             </g>
           );
         })}

@@ -1,9 +1,16 @@
 import type { KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+<<<<<<< HEAD
 import type { SupplyKind } from '../../model/supplyKind';
 import type { Scene } from '../../model/types';
 import type { WireId } from '../../model/ids';
 import { pinWorldPosition } from '../../model/pinLayout';
+=======
+import type { WireId } from '../../model/ids';
+import { pinWorldPosition } from '../../model/pinLayout';
+import type { SupplyKind } from '../../model/supplyKind';
+import type { Scene } from '../../model/types';
+>>>>>>> e1d5bf1 (updates)
 
 export type WireLayerProps = {
   readonly scene: Scene;
@@ -61,6 +68,10 @@ export function WireLayer({
         const live = testActive && energizedWireIds.has(w.id);
         const animClass =
           live && !reducedMotion ? ' wire-stroke--live-anim' : '';
+<<<<<<< HEAD
+=======
+        const kindClass = `wire-stroke--kind-${w.kind}`;
+>>>>>>> e1d5bf1 (updates)
         return (
           <g key={w.id} className="wire-bundle">
             <path
@@ -85,7 +96,11 @@ export function WireLayer({
             />
             {live ? (
               <path
+<<<<<<< HEAD
                 className={`wire-stroke wire-stroke--glow${animClass}`}
+=======
+                className={`wire-stroke wire-stroke--glow ${kindClass}${animClass}`}
+>>>>>>> e1d5bf1 (updates)
                 d={d}
                 fill="none"
               />
@@ -93,8 +108,13 @@ export function WireLayer({
             <path
               className={
                 live
+<<<<<<< HEAD
                   ? `wire-stroke wire-stroke--live${animClass}`
                   : 'wire-stroke wire-stroke--idle'
+=======
+                  ? `wire-stroke wire-stroke--live ${kindClass}${animClass}`
+                  : `wire-stroke wire-stroke--idle ${kindClass}`
+>>>>>>> e1d5bf1 (updates)
               }
               d={d}
               fill="none"

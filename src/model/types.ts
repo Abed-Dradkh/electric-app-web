@@ -1,5 +1,14 @@
 import type { PartId, PinId, WireId } from './ids';
 
+<<<<<<< HEAD
+=======
+/**
+ * Household-style conductor roles (visual; future sim may use these).
+ * Maps to black (live), blue (neutral), red (switched live) in the UI.
+ */
+export type WireKind = 'live' | 'neutral' | 'switched';
+
+>>>>>>> e1d5bf1 (updates)
 /** Kinds of components available in the workshop. */
 export type ComponentKind =
   | 'battery'
@@ -30,6 +39,10 @@ export type Wire = {
   readonly id: WireId;
   readonly pinA: PinId;
   readonly pinB: PinId;
+<<<<<<< HEAD
+=======
+  readonly kind: WireKind;
+>>>>>>> e1d5bf1 (updates)
 };
 
 /** Full editor scene. */
@@ -38,6 +51,11 @@ export type Scene = {
   readonly wires: readonly Wire[];
   /** Pin selected as first endpoint while wiring (if any). */
   readonly wireDraftFrom: PinId | null;
+<<<<<<< HEAD
+=======
+  /** Kind for the wire in progress (set when the first pin is chosen). */
+  readonly wireDraftKind: WireKind;
+>>>>>>> e1d5bf1 (updates)
   /** Monotonic counter for generating ids. */
   readonly nextPartIndex: number;
   readonly nextWireIndex: number;
@@ -50,7 +68,11 @@ export type SceneAction =
   | { type: 'setPartRotation'; partId: PartId; rotationDeg: number }
   | { type: 'toggleSwitch'; partId: PartId }
   | { type: 'toggleBreaker'; partId: PartId }
+<<<<<<< HEAD
   | { type: 'beginWire'; pin: PinId }
+=======
+  | { type: 'beginWire'; pin: PinId; kind: WireKind }
+>>>>>>> e1d5bf1 (updates)
   | { type: 'completeWire'; pin: PinId }
   | { type: 'cancelWire' }
   | { type: 'deleteWire'; wireId: WireId }
