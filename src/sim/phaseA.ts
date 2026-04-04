@@ -1,11 +1,11 @@
-import i18n from '../i18n';
 import { buildGraph } from '../graph/buildGraph';
 import type { GraphEdge } from '../graph/types';
-import { makePinId } from '../model/pinLayout';
-import type { Scene } from '../model/types';
-import type { PartId, PinId } from '../model/ids';
+import i18n from '../i18n';
+import type { PartId, PinId, WireId } from '../model/ids';
 import { partId } from '../model/ids';
+import { makePinId, PIN_ROLES } from '../model/pinLayout';
 import type { SupplyKind } from '../model/supplyKind';
+import type { Scene } from '../model/types';
 import type { PartSimHint, SimResult, SimulateOptions } from './types';
 
 function neighborsFromEdges(
@@ -42,6 +42,40 @@ function bfsDist(
     }
   }
   return dist;
+}
+
+/** BFS from the supply hot pin; collects wire ids and every reached pin. */
+function bfsHotReach(
+  start: PinId,
+  neighbors: Map<PinId, { peer: PinId; edge: GraphEdge }[]>,
+): { wireIds: Set<WireId>; reachablePins: Set<PinId> } {
+  const reachablePins = new Set<PinId>();
+  const wireIds = new Set<WireId>();
+  const q: PinId[] = [start];
+  reachablePins.add(start);
+  while (q.length > 0) {
+    const u = q.shift()!;
+    for (const { peer, edge } of neighbors.get(u) ?? []) {
+      if (edge.kind === 'wire' && edge.wireId !== null) {
+        wireIds.add(edge.wireId);
+      }
+      if (!reachablePins.has(peer)) {
+        reachablePins.add(peer);
+        q.push(peer);
+      }
+    }
+  }
+  return { wireIds, reachablePins };
+}
+
+function partAnyPinReachable(
+  p: Scene['parts'][number],
+  reachablePins: Set<PinId>,
+): boolean {
+  for (const role of PIN_ROLES[p.kind]) {
+    if (reachablePins.has(makePinId(p.id, role))) return true;
+  }
+  return false;
 }
 
 function edgeOnShortestPath(
@@ -102,12 +136,17 @@ function buildPartHints(
   distA: Map<PinId, number>,
   distB: Map<PinId, number>,
   dTotal: number,
+  reachablePins: Set<PinId>,
 ): Map<PartId, PartSimHint> {
   const m = new Map<PartId, PartSimHint>();
   for (const p of scene.parts) {
     const pid = partId(p.id);
     if (p.kind === 'battery' || p.kind === 'ac_supply') {
-      m.set(pid, { batterySupplying: loop, loadEnergized: false });
+      m.set(pid, {
+        batterySupplying: true,
+        loadEnergized: false,
+        supplyReachable: true,
+      });
       continue;
     }
     if (p.kind === 'breaker_2p') {
@@ -124,7 +163,11 @@ function buildPartHints(
           load = true;
         }
       }
-      m.set(pid, { batterySupplying: false, loadEnergized: load });
+      m.set(pid, {
+        batterySupplying: false,
+        loadEnergized: load,
+        supplyReachable: partAnyPinReachable(p, reachablePins),
+      });
       continue;
     }
     let load = false;
@@ -134,7 +177,11 @@ function buildPartHints(
         load = true;
       }
     }
-    m.set(pid, { batterySupplying: false, loadEnergized: load });
+    m.set(pid, {
+      batterySupplying: false,
+      loadEnergized: load,
+      supplyReachable: partAnyPinReachable(p, reachablePins),
+    });
   }
   return m;
 }
@@ -145,20 +192,36 @@ function emptyHints(scene: Scene): Map<PartId, PartSimHint> {
     m.set(partId(p.id), {
       batterySupplying: false,
       loadEnergized: false,
+      supplyReachable: false,
     });
   }
   return m;
 }
 
-/**
- * When Test is on in AC mode, the inlet is always “live” as the provider,
- * even if L–N is not yet connected through the circuit.
- */
-function hintsWithAcSupplyAlwaysEnergized(scene: Scene): Map<PartId, PartSimHint> {
-  const m = emptyHints(scene);
-  const acId = findAcSupplyPartId(scene);
-  if (acId !== null) {
-    m.set(acId, { batterySupplying: true, loadEnergized: false });
+/** Hints from hot-side reachability only (incomplete loop / no return path). */
+function buildHotHints(
+  scene: Scene,
+  reachablePins: Set<PinId>,
+  supplyPartId: PartId,
+): Map<PartId, PartSimHint> {
+  const m = new Map<PartId, PartSimHint>();
+  for (const p of scene.parts) {
+    const pid = partId(p.id);
+    const isSupply =
+      pid === supplyPartId && (p.kind === 'battery' || p.kind === 'ac_supply');
+    if (isSupply) {
+      m.set(pid, {
+        batterySupplying: true,
+        loadEnergized: false,
+        supplyReachable: true,
+      });
+    } else {
+      m.set(pid, {
+        batterySupplying: false,
+        loadEnergized: false,
+        supplyReachable: partAnyPinReachable(p, reachablePins),
+      });
+    }
   }
   return m;
 }
@@ -170,15 +233,22 @@ function simulateDc(scene: Scene): SimResult {
       testActive: true,
       isCompleteLoop: false,
       energizedWireIds: new Set(),
+      supplyReachWireIds: new Set(),
       partHints: emptyHints(scene),
       statusMessage: i18n.t('sim.dcAddBattery'),
     };
   }
 
-  const start = makePinId(batteryPartId, 'positive');
-  const end = makePinId(batteryPartId, 'negative');
   const graph = buildGraph(scene);
   const neighbors = neighborsFromEdges(graph.edges);
+  const hotStart = makePinId(batteryPartId, 'positive');
+  const { wireIds: supplyReachWireIds, reachablePins } = bfsHotReach(
+    hotStart,
+    neighbors,
+  );
+
+  const start = hotStart;
+  const end = makePinId(batteryPartId, 'negative');
   const distA = bfsDist(start, neighbors);
   const distB = bfsDist(end, neighbors);
 
@@ -187,7 +257,8 @@ function simulateDc(scene: Scene): SimResult {
       testActive: true,
       isCompleteLoop: false,
       energizedWireIds: new Set(),
-      partHints: emptyHints(scene),
+      supplyReachWireIds,
+      partHints: buildHotHints(scene, reachablePins, batteryPartId),
       statusMessage: i18n.t('sim.dcNoPath'),
     };
   }
@@ -211,12 +282,14 @@ function simulateDc(scene: Scene): SimResult {
     distA,
     distB,
     dTotal,
+    reachablePins,
   );
 
   return {
     testActive: true,
     isCompleteLoop: true,
     energizedWireIds: energizedWires,
+    supplyReachWireIds,
     partHints: hints,
     statusMessage: i18n.t('sim.dcComplete'),
   };
@@ -229,15 +302,23 @@ function simulateAc(scene: Scene): SimResult {
       testActive: true,
       isCompleteLoop: false,
       energizedWireIds: new Set(),
+      supplyReachWireIds: new Set(),
       partHints: emptyHints(scene),
       statusMessage: i18n.t('sim.acAddInlet'),
     };
   }
 
-  const start = makePinId(inletId, 'l');
-  const end = makePinId(inletId, 'n');
   const graph = buildGraph(scene);
   const neighbors = neighborsFromEdges(graph.edges);
+  /** AC “line” terminal — hot-side teaching convention. */
+  const hotStart = makePinId(inletId, 'l');
+  const { wireIds: supplyReachWireIds, reachablePins } = bfsHotReach(
+    hotStart,
+    neighbors,
+  );
+
+  const start = hotStart;
+  const end = makePinId(inletId, 'n');
   const distA = bfsDist(start, neighbors);
   const distB = bfsDist(end, neighbors);
 
@@ -246,7 +327,8 @@ function simulateAc(scene: Scene): SimResult {
       testActive: true,
       isCompleteLoop: false,
       energizedWireIds: new Set(),
-      partHints: hintsWithAcSupplyAlwaysEnergized(scene),
+      supplyReachWireIds,
+      partHints: buildHotHints(scene, reachablePins, inletId),
       statusMessage: i18n.t('sim.acNoPath'),
     };
   }
@@ -270,12 +352,14 @@ function simulateAc(scene: Scene): SimResult {
     distA,
     distB,
     dTotal,
+    reachablePins,
   );
 
   return {
     testActive: true,
     isCompleteLoop: true,
     energizedWireIds: energizedWires,
+    supplyReachWireIds,
     partHints: hints,
     statusMessage: i18n.t('sim.acComplete'),
   };
@@ -292,6 +376,7 @@ export function simulate(scene: Scene, options: SimulateOptions): SimResult {
       testActive: false,
       isCompleteLoop: false,
       energizedWireIds: new Set(),
+      supplyReachWireIds: new Set(),
       partHints: emptyHints(scene),
       statusMessage: i18n.t('sim.testOff'),
     };

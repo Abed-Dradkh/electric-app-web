@@ -72,7 +72,12 @@ export function PartView({
     testActive &&
     hint?.batterySupplying &&
     (part.kind === 'battery' || part.kind === 'ac_supply');
-  const testIdle = testActive && !loadOn && !batOn;
+  const supplyStandby =
+    testActive &&
+    !isSupply &&
+    Boolean(hint?.supplyReachable) &&
+    !hint?.loadEnergized;
+  const testIdle = testActive && !loadOn && !batOn && !supplyStandby;
 
   const partClasses = [
     'part',
@@ -80,6 +85,7 @@ export function PartView({
     selected && 'part--selected',
     loadOn && 'part--load-on',
     batOn && 'part--battery-on',
+    supplyStandby && 'part--supply-standby',
     testIdle && 'part--test-idle',
   ]
     .filter(Boolean)

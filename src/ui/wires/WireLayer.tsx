@@ -1,14 +1,15 @@
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { WireId } from '../../model/ids';
-import { getWireRenderGeometry } from '../../model/wirePath';
 import type { SupplyKind } from '../../model/supplyKind';
 import type { Scene } from '../../model/types';
+import { getWireRenderGeometry } from '../../model/wirePath';
 import type { WireWaypointPreview } from './WireHandles';
 
 export type WireLayerProps = {
   readonly scene: Scene;
   readonly energizedWireIds: ReadonlySet<WireId>;
+  readonly supplyReachWireIds: ReadonlySet<WireId>;
   readonly testActive: boolean;
   readonly reducedMotion: boolean;
   readonly supplyKind: SupplyKind;
@@ -30,6 +31,7 @@ function stopWireEvent(e: { stopPropagation: () => void }) {
 export function WireLayer({
   scene,
   energizedWireIds,
+  supplyReachWireIds,
   testActive,
   reducedMotion,
   supplyKind,
@@ -51,9 +53,11 @@ export function WireLayer({
         const geom = getWireRenderGeometry(scene, w, preview);
         if (!geom) return null;
         const { d, isRouted } = geom;
-        const live = testActive && energizedWireIds.has(w.id);
+        const fullLive = testActive && energizedWireIds.has(w.id);
+        const standbyLive =
+          testActive && !fullLive && supplyReachWireIds.has(w.id);
         const animClass =
-          live && !reducedMotion ? ' wire-stroke--live-anim' : '';
+          fullLive && !reducedMotion ? ' wire-stroke--live-anim' : '';
         const kindClass = `wire-stroke--kind-${w.kind}`;
         const selected = selectedWireId === w.id;
 
@@ -94,9 +98,16 @@ export function WireLayer({
                 }
               }}
             />
-            {live ? (
+            {fullLive ? (
               <path
                 className={`wire-stroke wire-stroke--glow ${kindClass}${animClass}`}
+                d={d}
+                fill="none"
+                pointerEvents="none"
+              />
+            ) : standbyLive ? (
+              <path
+                className={`wire-stroke wire-stroke--standby-glow ${kindClass}`}
                 d={d}
                 fill="none"
                 pointerEvents="none"
@@ -104,9 +115,11 @@ export function WireLayer({
             ) : null}
             <path
               className={
-                live
+                fullLive
                   ? `wire-stroke wire-stroke--live ${kindClass}${animClass}`
-                  : `wire-stroke wire-stroke--idle ${kindClass}`
+                  : standbyLive
+                    ? `wire-stroke wire-stroke--standby ${kindClass}`
+                    : `wire-stroke wire-stroke--idle ${kindClass}`
               }
               d={d}
               fill="none"

@@ -502,6 +502,42 @@ body {
   filter: blur(4px);
 }
 
+/* Hot-side reachability only (no full loop path); no dash animation. */
+.wire-stroke--standby {
+  stroke-width: 3.25;
+  opacity: 0.88;
+}
+
+.wire-stroke--kind-live.wire-stroke--standby {
+  stroke: #3a3a3a;
+}
+
+.wire-stroke--kind-neutral.wire-stroke--standby {
+  stroke: #1565c0;
+}
+
+.wire-stroke--kind-switched.wire-stroke--standby {
+  stroke: #c62828;
+}
+
+.wire-stroke--standby-glow {
+  stroke-width: 7;
+  opacity: 0.45;
+  filter: blur(3px);
+}
+
+.wire-stroke--kind-live.wire-stroke--standby-glow {
+  stroke: rgba(45, 45, 45, 0.4);
+}
+
+.wire-stroke--kind-neutral.wire-stroke--standby-glow {
+  stroke: rgba(21, 101, 192, 0.4);
+}
+
+.wire-stroke--kind-switched.wire-stroke--standby-glow {
+  stroke: rgba(198, 40, 40, 0.4);
+}
+
 .wire-stroke--live-anim {
   stroke-dasharray: 8 12;
   animation: wire-dash 1.1s linear infinite;
@@ -769,6 +805,21 @@ body {
   filter: drop-shadow(0 0 8px rgba(255, 200, 80, 0.5));
 }
 
+.part--supply-standby .part-body {
+  stroke: #7a6a48;
+  filter: drop-shadow(0 0 5px rgba(200, 160, 70, 0.28));
+}
+
+.part--supply-standby .part-label {
+  fill: #a89878;
+  text-shadow: 0 0 4px rgba(200, 160, 80, 0.25);
+}
+
+.part--supply-standby .part-switch-state {
+  fill: #a09070;
+  opacity: 0.9;
+}
+
 .part--battery-on .part-body {
   stroke: #8fbc6a;
   filter: drop-shadow(0 0 6px rgba(120, 200, 90, 0.45));
@@ -776,6 +827,7 @@ body {
 
 .part--load-on.part--selected .part-body,
 .part--battery-on.part--selected .part-body,
+.part--supply-standby.part--selected .part-body,
 .part--test-idle.part--selected .part-body {
   stroke: var(--color-accent);
 }
