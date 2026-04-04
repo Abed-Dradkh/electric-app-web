@@ -31,12 +31,23 @@ export type Part = {
   readonly breakerOn: boolean;
 };
 
+/** Board-space point for wire routing (internal bends between pins). */
+export type WirePoint = {
+  readonly x: number;
+  readonly y: number;
+};
+
 /** User-drawn connection between two pins. */
 export type Wire = {
   readonly id: WireId;
   readonly pinA: PinId;
   readonly pinB: PinId;
   readonly kind: WireKind;
+  /**
+   * Optional internal waypoints (board px). Endpoints are always pin positions.
+   * Omitted or empty: UI uses automatic curved path between pins.
+   */
+  readonly waypoints?: readonly WirePoint[];
 };
 
 /** Full editor scene. */
@@ -63,5 +74,10 @@ export type SceneAction =
   | { type: 'completeWire'; pin: PinId }
   | { type: 'cancelWire' }
   | { type: 'deleteWire'; wireId: WireId }
+  | {
+      type: 'setWireWaypoints';
+      wireId: WireId;
+      waypoints: readonly WirePoint[];
+    }
   | { type: 'deletePart'; partId: PartId }
   | { type: 'deleteParts'; partIds: readonly PartId[] };

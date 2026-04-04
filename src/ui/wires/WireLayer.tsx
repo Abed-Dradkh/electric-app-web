@@ -1,9 +1,10 @@
-import type { KeyboardEvent } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { WireId } from '../../model/ids';
-import { pinWorldPosition } from '../../model/pinLayout';
+import { getWireRenderGeometry } from '../../model/wirePath';
 import type { SupplyKind } from '../../model/supplyKind';
 import type { Scene } from '../../model/types';
+import type { WireWaypointPreview } from './WireHandles';
 
 export type WireLayerProps = {
   readonly scene: Scene;
@@ -11,29 +12,16 @@ export type WireLayerProps = {
   readonly testActive: boolean;
   readonly reducedMotion: boolean;
   readonly supplyKind: SupplyKind;
+  readonly selectedWireId: WireId | null;
+  readonly waypointPreview: WireWaypointPreview | null;
+  readonly onSelectWire: (wireId: WireId) => void;
   readonly onRemoveWire: (wireId: WireId) => void;
+  readonly onWireSegmentDoubleClick: (
+    wireId: WireId,
+    clientX: number,
+    clientY: number,
+  ) => void;
 };
-
-function wireCurve(
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number,
-): { d: string; midX: number; midY: number } {
-  const mx = (x1 + x2) / 2;
-  const my = (y1 + y2) / 2;
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const len = Math.hypot(dx, dy) || 1;
-  const ox = (-dy / len) * 12;
-  const oy = (dx / len) * 12;
-  const cx = mx + ox;
-  const cy = my + oy;
-  const d = `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`;
-  const midX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
-  const midY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
-  return { d, midX, midY };
-}
 
 function stopWireEvent(e: { stopPropagation: () => void }) {
   e.stopPropagation();
@@ -45,7 +33,11 @@ export function WireLayer({
   testActive,
   reducedMotion,
   supplyKind,
+  selectedWireId,
+  waypointPreview,
+  onSelectWire,
   onRemoveWire,
+  onWireSegmentDoubleClick,
 }: WireLayerProps) {
   const { t } = useTranslation();
   const layerClass =
@@ -54,14 +46,22 @@ export function WireLayer({
   return (
     <g className={layerClass}>
       {scene.wires.map((w) => {
-        const a = pinWorldPosition(scene, w.pinA);
-        const b = pinWorldPosition(scene, w.pinB);
-        if (!a || !b) return null;
-        const { d, midX, midY } = wireCurve(a.x, a.y, b.x, b.y);
+        const preview =
+          waypointPreview?.wireId === w.id ? waypointPreview : null;
+        const geom = getWireRenderGeometry(scene, w, preview);
+        if (!geom) return null;
+        const { d, isRouted } = geom;
         const live = testActive && energizedWireIds.has(w.id);
         const animClass =
           live && !reducedMotion ? ' wire-stroke--live-anim' : '';
         const kindClass = `wire-stroke--kind-${w.kind}`;
+        const selected = selectedWireId === w.id;
+
+        const aria =
+          selected && isRouted
+            ? t('wire.selectedRouted')
+            : t('wire.selectWire');
+
         return (
           <g key={w.id} className="wire-bundle">
             <path
@@ -70,17 +70,27 @@ export function WireLayer({
               fill="none"
               role="button"
               tabIndex={0}
-              aria-label={t('wire.removeWire')}
+              aria-label={aria}
+              aria-pressed={selected}
               onPointerDown={stopWireEvent}
-              onClick={(e) => {
+              onClick={(e: MouseEvent<SVGPathElement>) => {
                 stopWireEvent(e);
-                onRemoveWire(w.id);
+                if (e.altKey) {
+                  onRemoveWire(w.id);
+                } else {
+                  onSelectWire(w.id);
+                }
+              }}
+              onDoubleClick={(e) => {
+                stopWireEvent(e);
+                if (selectedWireId !== w.id) return;
+                onWireSegmentDoubleClick(w.id, e.clientX, e.clientY);
               }}
               onKeyDown={(e: KeyboardEvent<SVGPathElement>) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
                   stopWireEvent(e);
-                  onRemoveWire(w.id);
+                  onSelectWire(w.id);
                 }
               }}
             />
@@ -89,6 +99,7 @@ export function WireLayer({
                 className={`wire-stroke wire-stroke--glow ${kindClass}${animClass}`}
                 d={d}
                 fill="none"
+                pointerEvents="none"
               />
             ) : null}
             <path
@@ -99,19 +110,8 @@ export function WireLayer({
               }
               d={d}
               fill="none"
+              pointerEvents="none"
             />
-            <g
-              className="wire-hover-hint"
-              transform={`translate(${midX},${midY})`}
-              aria-hidden
-            >
-              <circle className="wire-hover-hint-bg" r={15} />
-              <path
-                className="wire-hover-hint-x"
-                d="M -6 -6 L 6 6 M -6 6 L 6 -6"
-                fill="none"
-              />
-            </g>
           </g>
         );
       })}

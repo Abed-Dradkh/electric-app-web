@@ -3,22 +3,22 @@ import type { MouseEvent, PointerEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { PinId } from '../../model/ids';
 import {
-  PIN_ROLES,
-  makePinId,
-  pinOffset,
-  type PinRole,
+    PIN_ROLES,
+    makePinId,
+    pinOffset,
+    type PinRole,
 } from '../../model/pinLayout';
 import type { Part } from '../../model/types';
 import type { PartSimHint } from '../../sim/types';
 import {
-  PART_ROTATE_HANDLE_BOX,
-  partHoverBarBox,
-  type PartHoverBarPosition,
-  type RotateHandlePosition,
+    PART_ROTATE_HANDLE_BOX,
+    partHoverBarBox,
+    type PartHoverBarPosition,
+    type RotateHandlePosition,
 } from '../partHoverLayout';
 import {
-  pinConnectorLabelPlacement,
-  pinConnectorShortLabel,
+    pinConnectorLabelPlacement,
+    pinConnectorShortLabel,
 } from './pinConnectorLabel';
 
 export type PartViewProps = {

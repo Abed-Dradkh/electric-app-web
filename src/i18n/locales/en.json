@@ -1,10 +1,16 @@
 {
   "app": {
     "title": "Electric workshop",
+    "navStyles": "Part styles",
     "testOn": "Test on",
     "testOff": "Test off",
     "boardSectionAria": "Workbench board",
     "boardSvgAria": "Circuit board; drag parts and connect pins."
+  },
+  "styles": {
+    "title": "Part style lab",
+    "description": "Compare part visual styles here; the chosen look will become the default in the workshop.",
+    "back": "Back to workshop"
   },
   "lang": {
     "groupAria": "Language",
@@ -19,12 +25,14 @@
     "ac": "AC",
     "hintAcSupply": "House wiring: connect line (L) to neutral (N) through loads.",
     "hintDcSupply": "Bench parts: use wires between pins to build a DC circuit.",
-    "hintAcParts": "Click a pin, choose wire color, then click the other pin. Click a wire to remove it. Hover a part for remove and switch/breaker controls.",
-    "hintDcParts": "Click a pin, choose wire color, then click the other pin. Click a wire to remove it. Hover a part for remove and switch On/Off.",
+    "hintAcParts": "Click a pin, choose wire color, then click the other pin. Click a wire to select it (Alt+click to delete). Double-click a selected wire to add a bend on the grid; drag blue points to route. Hover a part for remove and switch/breaker controls.",
+    "hintDcParts": "Click a pin, choose wire color, then click the other pin. Click a wire to select it (Alt+click to delete). Double-click a selected wire to add a bend on the grid; drag blue points to route. Hover a part for remove and switch On/Off.",
     "addPart": "Add {{label}}"
   },
   "wire": {
     "removeWire": "Remove wire",
+    "selectWire": "Select wire to edit path. Alt+click to remove.",
+    "selectedRouted": "Selected wire; double-click path to add a point, drag points to move.",
     "colorPickerGroup": "Wire type",
     "kind": {
       "live": "Line (black)",

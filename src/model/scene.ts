@@ -1,6 +1,6 @@
 import { partId, wireId, type PinId } from './ids';
 import { allPinsForPart } from './pinLayout';
-import type { Scene, SceneAction } from './types';
+import type { Scene, SceneAction, WirePoint } from './types';
 
 export function initialScene(): Scene {
   return {
@@ -122,6 +122,27 @@ export function sceneReducer(state: Scene, action: SceneAction): Scene {
         ...state,
         wires: state.wires.filter((w) => w.id !== action.wireId),
       };
+    case 'setWireWaypoints': {
+      const w = state.wires.find((x) => x.id === action.wireId);
+      if (!w) return state;
+      const cleaned: { x: number; y: number }[] = [];
+      for (const p of action.waypoints) {
+        if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) continue;
+        cleaned.push({ x: p.x, y: p.y });
+      }
+      const nextWaypoints = cleaned as readonly WirePoint[];
+      return {
+        ...state,
+        wires: state.wires.map((x) =>
+          x.id === action.wireId
+            ? {
+                ...x,
+                waypoints: nextWaypoints.length > 0 ? nextWaypoints : undefined,
+              }
+            : x,
+        ),
+      };
+    }
     case 'deletePart': {
       const part = state.parts.find((p) => p.id === action.partId);
       if (!part) return state;

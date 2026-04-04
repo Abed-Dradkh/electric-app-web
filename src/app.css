@@ -58,6 +58,41 @@ body {
   gap: 0.5rem;
 }
 
+.app-nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-board-edge);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.app-nav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.app-nav-link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.styles-page-main {
+  flex: 1;
+  padding: 1.25rem 1.5rem;
+  max-width: 42rem;
+}
+
+.styles-page-lead {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
 .app-settings-wrap {
   position: relative;
 }
@@ -322,6 +357,32 @@ body {
   cursor: crosshair;
 }
 
+.board-grid-overlay {
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.board-grid-pattern-path {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+}
+
+.wire-handles {
+  pointer-events: auto;
+}
+
+.wire-waypoint-handle {
+  fill: var(--color-surface);
+  stroke: var(--color-accent);
+  stroke-width: 2;
+  cursor: grab;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.wire-waypoint-handle:active {
+  cursor: grabbing;
+}
+
 .selection-marquee {
   fill: rgba(232, 165, 75, 0.12);
   stroke: var(--color-accent);
@@ -378,53 +439,6 @@ body {
 
 .wire-hit:focus-visible {
   stroke: rgba(232, 165, 75, 0.45);
-}
-
-.wire-hover-hint {
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.14s ease;
-}
-
-.wire-bundle:hover .wire-hover-hint,
-.wire-bundle:focus-within .wire-hover-hint {
-  opacity: 1;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .wire-hover-hint {
-    transition: none;
-  }
-}
-
-.wire-hover-hint-bg {
-  fill: var(--color-surface);
-  stroke: var(--color-accent);
-  stroke-width: 1.5;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
-}
-
-/* Vector × (not text) — avoids blurry / off-center font glyph on wires. */
-.wire-hover-hint-x {
-  stroke: var(--color-accent);
-  stroke-width: 2.25;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-  pointer-events: none;
-  shape-rendering: geometricPrecision;
-}
-
-/* Touch / no hover: keep a faint remove cue on wires. */
-@media (hover: none), (pointer: coarse) {
-  .wire-hover-hint {
-    opacity: 0.5;
-  }
-
-  .wire-bundle:hover .wire-hover-hint,
-  .wire-bundle:focus-within .wire-hover-hint {
-    opacity: 1;
-  }
 }
 
 .wire-stroke {
