@@ -26,6 +26,8 @@ export type PartViewProps = {
   readonly selected: boolean;
   readonly hint: PartSimHint | undefined;
   readonly testActive: boolean;
+  /** When true, supply “flow” border uses static styling (matches wire layer). */
+  readonly reducedMotion: boolean;
   readonly draftPin: PinId | null;
   readonly showPinLabels: boolean;
   readonly hoverBarPosition: PartHoverBarPosition;
@@ -49,6 +51,7 @@ export function PartView({
   selected,
   hint,
   testActive,
+  reducedMotion,
   draftPin,
   showPinLabels,
   hoverBarPosition,
@@ -70,14 +73,10 @@ export function PartView({
   const loadOn = testActive && hint?.loadEnergized && !isSupply;
   const batOn =
     testActive &&
-    hint?.batterySupplying &&
     (part.kind === 'battery' || part.kind === 'ac_supply');
-  const supplyStandby =
-    testActive &&
-    !isSupply &&
-    Boolean(hint?.supplyReachable) &&
-    !hint?.loadEnergized;
-  const testIdle = testActive && !loadOn && !batOn && !supplyStandby;
+  const testIdle = testActive && !loadOn && !batOn;
+  const showSupplyFlow =
+    batOn && isSupply && !reducedMotion;
 
   const partClasses = [
     'part',
@@ -85,7 +84,6 @@ export function PartView({
     selected && 'part--selected',
     loadOn && 'part--load-on',
     batOn && 'part--battery-on',
-    supplyStandby && 'part--supply-standby',
     testIdle && 'part--test-idle',
   ]
     .filter(Boolean)
@@ -95,7 +93,12 @@ export function PartView({
     <g transform={`translate(${part.x},${part.y}) rotate(${part.rotationDeg})`}>
       <g className={partClasses}>
         <rect
-          className="part-body"
+          className={[
+            'part-body',
+            showSupplyFlow && 'part-body--supply-flow-active',
+          ]
+            .filter(Boolean)
+            .join(' ')}
           x={-56}
           y={-36}
           width={112}
@@ -106,6 +109,24 @@ export function PartView({
             onBodyPointerDown(e);
           }}
         />
+        {showSupplyFlow ? (
+          <rect
+            className={[
+              'part-supply-flow',
+              selected && 'part-supply-flow--selected',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            x={-56}
+            y={-36}
+            width={112}
+            height={72}
+            rx={8}
+            fill="none"
+            pointerEvents="none"
+            aria-hidden
+          />
+        ) : null}
         <text className="part-label" x={0} y={6} textAnchor="middle">
           {label}
         </text>

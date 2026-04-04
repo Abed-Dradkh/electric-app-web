@@ -14,18 +14,18 @@ import type { PartId, PinId, WireId } from '../model/ids';
 import { pinWorldPosition } from '../model/pinLayout';
 import { initialScene, sceneReducer } from '../model/scene';
 import {
-    normalizeMarqueeRect,
-    partIdsInMarquee,
-} from '../model/selectionBounds';
-import type { SupplyKind } from '../model/supplyKind';
-import type { ComponentKind, WireKind } from '../model/types';
-import {
     buildWirePolyline,
     findClosestSegmentOnPolyline,
     GRID_STEP,
     insertWaypointAtSegment,
     snapToGrid,
 } from '../model/wirePath';
+import {
+    normalizeMarqueeRect,
+    partIdsInMarquee,
+} from '../model/selectionBounds';
+import type { SupplyKind } from '../model/supplyKind';
+import type { ComponentKind, WireKind } from '../model/types';
 import { simulate } from '../sim';
 import {
     angleFromCenterDeg,
@@ -372,7 +372,12 @@ export function WorkshopPage() {
     (wireId: WireId, clientX: number, clientY: number) => {
       const svg = svgRef.current;
       if (!svg) return;
-      const { x, y } = screenToBoard(clientX, clientY, svg, identityTransform);
+      const { x, y } = screenToBoard(
+        clientX,
+        clientY,
+        svg,
+        identityTransform,
+      );
       const wire = sceneRef.current.wires.find((w) => w.id === wireId);
       if (!wire) return;
       const poly = buildWirePolyline(sceneRef.current, wire);
@@ -391,11 +396,7 @@ export function WorkshopPage() {
   );
 
   const onWaypointPointerDown = useCallback(
-    (
-      wireId: WireId,
-      internalIndex: number,
-      e: ReactPointerEvent<SVGCircleElement>,
-    ) => {
+    (wireId: WireId, internalIndex: number, e: ReactPointerEvent<SVGCircleElement>) => {
       try {
         e.currentTarget.setPointerCapture(e.pointerId);
       } catch {
@@ -531,12 +532,13 @@ export function WorkshopPage() {
         setWaypointPreview(null);
         if (board) {
           const snapped = snapToGrid(board.x, board.y);
-          const wire = sceneRef.current.wires.find(
-            (w) => w.id === wDrag.wireId,
-          );
+          const wire = sceneRef.current.wires.find((w) => w.id === wDrag.wireId);
           if (wire) {
             const wps = [...(wire.waypoints ?? [])];
-            if (wDrag.internalIndex >= 0 && wDrag.internalIndex < wps.length) {
+            if (
+              wDrag.internalIndex >= 0 &&
+              wDrag.internalIndex < wps.length
+            ) {
               wps[wDrag.internalIndex] = snapped;
               dispatch({
                 type: 'setWireWaypoints',
@@ -644,7 +646,6 @@ export function WorkshopPage() {
             <WireLayer
               scene={scene}
               energizedWireIds={sim.energizedWireIds}
-              supplyReachWireIds={sim.supplyReachWireIds}
               testActive={sim.testActive}
               reducedMotion={reducedMotion}
               supplyKind={supplyKind}
@@ -661,6 +662,7 @@ export function WorkshopPage() {
                 selected={selectedIds.has(p.id)}
                 hint={sim.partHints.get(p.id)}
                 testActive={sim.testActive}
+                reducedMotion={reducedMotion}
                 draftPin={scene.wireDraftFrom}
                 showPinLabels={pinLabelsVisible}
                 hoverBarPosition={hoverBarPosition}

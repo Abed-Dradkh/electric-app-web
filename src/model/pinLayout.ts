@@ -1,6 +1,6 @@
-import type { PinId } from './ids';
-import { pinId } from './ids';
-import type { Part } from './types';
+import type { PartId, PinId } from './ids';
+import { partId, pinId } from './ids';
+import type { Part, Scene, Wire } from './types';
 
 /** Pin roles for graph ids and layout (stable string suffixes after `partId:`). */
 export type PinRole =
@@ -45,6 +45,27 @@ export const PIN_ROLES: Record<Part['kind'], readonly PinRole[]> = {
 
 export function makePinId(partId: string, role: PinRole): PinId {
   return pinId(`${partId}:${role}`);
+}
+
+/** Part id segment of a pin id (`partId:role`). */
+export function partIdFromPinId(pin: PinId): PartId {
+  const s = pin as string;
+  const i = s.indexOf(':');
+  return partId(i === -1 ? s : s.slice(0, i));
+}
+
+/** True if the wire is attached to a battery or AC supply pin (UI treats as live while Test is on). */
+export function wireAdjacentToSupply(scene: Scene, wire: Wire): boolean {
+  const supplyIds = new Set(
+    scene.parts
+      .filter((p) => p.kind === 'battery' || p.kind === 'ac_supply')
+      .map((p) => p.id),
+  );
+  if (supplyIds.size === 0) return false;
+  return (
+    supplyIds.has(partIdFromPinId(wire.pinA)) ||
+    supplyIds.has(partIdFromPinId(wire.pinB))
+  );
 }
 
 /** Offset from part center to pin anchor (board px). */

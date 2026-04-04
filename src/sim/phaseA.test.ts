@@ -37,7 +37,6 @@ describe('simulate Phase A', () => {
     expect(r.testActive).toBe(false);
     expect(r.isCompleteLoop).toBe(false);
     expect(r.energizedWireIds.size).toBe(0);
-    expect(r.supplyReachWireIds.size).toBe(0);
   });
 
   it('shows AC supply as live when test is on even without L–N path', () => {
@@ -56,12 +55,6 @@ describe('simulate Phase A', () => {
     expect(wireIds.every((id) => r.energizedWireIds.has(wireId(id)))).toBe(
       true,
     );
-    expect(wireIds.every((id) => r.supplyReachWireIds.has(wireId(id)))).toBe(
-      true,
-    );
-    for (const id of r.energizedWireIds) {
-      expect(r.supplyReachWireIds.has(id)).toBe(true);
-    }
   });
 
   it('detects AC L–N loop through breaker, switch, and lamp', () => {
@@ -177,8 +170,6 @@ describe('simulate Phase A', () => {
     const r = simulate(s, { testActive: true, supplyKind: 'ac' });
     expect(r.isCompleteLoop).toBe(false);
     expect(r.energizedWireIds.size).toBe(0);
-    const acToBr = s.wires[0]!;
-    expect(r.supplyReachWireIds.has(wireId(acToBr.id))).toBe(true);
   });
 
   it('breaks the loop when switch is open', () => {
@@ -213,9 +204,5 @@ describe('simulate Phase A', () => {
     const r = simulate(s, { testActive: true });
     expect(r.isCompleteLoop).toBe(false);
     expect(r.energizedWireIds.size).toBe(0);
-    const w0 = s.wires[0];
-    expect(w0).toBeDefined();
-    expect(r.supplyReachWireIds.has(wireId(w0!.id))).toBe(true);
-    expect(r.supplyReachWireIds.size).toBe(1);
   });
 });
