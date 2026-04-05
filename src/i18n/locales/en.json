@@ -7,6 +7,11 @@
     "boardSectionAria": "Workbench board",
     "boardSvgAria": "Circuit board; drag parts and connect pins."
   },
+  "redesign": {
+    "titleV1": "Electric Workshop Redesign V1",
+    "titleV2": "Electric Workshop Redesign V2",
+    "testLabel": "Test"
+  },
   "styles": {
     "title": "Part style lab",
     "description": "Compare part visual styles here; the chosen look will become the default in the workshop.",
@@ -98,6 +103,9 @@
     "pinLabelsLabel": "Pin labels",
     "pinLabelsShow": "Show",
     "pinLabelsHide": "Hide",
+    "layoutLabel": "Layout",
+    "layoutV1": "V1",
+    "layoutV2": "V2",
     "up": "Up",
     "down": "Down",
     "left": "Left",

@@ -14,18 +14,18 @@ import type { PartId, PinId, WireId } from '../model/ids';
 import { pinWorldPosition } from '../model/pinLayout';
 import { initialScene, sceneReducer } from '../model/scene';
 import {
+    normalizeMarqueeRect,
+    partIdsInMarquee,
+} from '../model/selectionBounds';
+import type { SupplyKind } from '../model/supplyKind';
+import type { ComponentKind, WireKind } from '../model/types';
+import {
     buildWirePolyline,
     findClosestSegmentOnPolyline,
     GRID_STEP,
     insertWaypointAtSegment,
     snapToGrid,
 } from '../model/wirePath';
-import {
-    normalizeMarqueeRect,
-    partIdsInMarquee,
-} from '../model/selectionBounds';
-import type { SupplyKind } from '../model/supplyKind';
-import type { ComponentKind, WireKind } from '../model/types';
 import { simulate } from '../sim';
 import {
     angleFromCenterDeg,
@@ -36,6 +36,12 @@ import {
 import { HeaderSettings } from '../ui/HeaderSettings';
 import { isAppLocale, persistLocale } from '../ui/localeStorage';
 import { Palette } from '../ui/palette/Palette';
+import { PartStylesIcon, PlayIcon } from '../ui/workshopRedesignIcons';
+import type { WorkshopLayoutVariant } from '../ui/workshopLayoutVariantStorage';
+import {
+    loadStoredWorkshopLayoutVariant,
+    persistWorkshopLayoutVariant,
+} from '../ui/workshopLayoutVariantStorage';
 import {
     loadStoredHoverBarPosition,
     loadStoredRotateHandlePosition,
@@ -79,6 +85,10 @@ export function WorkshopPage() {
   const [supplyKind, setSupplyKind] = useState<SupplyKind>(
     () => loadStoredSupplyKind() ?? 'dc',
   );
+  const [workshopLayoutVariant, setWorkshopLayoutVariant] =
+    useState<WorkshopLayoutVariant>(
+      () => loadStoredWorkshopLayoutVariant() ?? 'v1',
+    );
   const reducedMotion = useReducedMotion();
   const svgRef = useRef<SVGSVGElement | null>(null);
   const sceneRef = useRef(scene);
@@ -141,6 +151,10 @@ export function WorkshopPage() {
   useEffect(() => {
     persistSupplyKind(supplyKind);
   }, [supplyKind]);
+
+  useEffect(() => {
+    persistWorkshopLayoutVariant(workshopLayoutVariant);
+  }, [workshopLayoutVariant]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -372,12 +386,7 @@ export function WorkshopPage() {
     (wireId: WireId, clientX: number, clientY: number) => {
       const svg = svgRef.current;
       if (!svg) return;
-      const { x, y } = screenToBoard(
-        clientX,
-        clientY,
-        svg,
-        identityTransform,
-      );
+      const { x, y } = screenToBoard(clientX, clientY, svg, identityTransform);
       const wire = sceneRef.current.wires.find((w) => w.id === wireId);
       if (!wire) return;
       const poly = buildWirePolyline(sceneRef.current, wire);
@@ -396,7 +405,11 @@ export function WorkshopPage() {
   );
 
   const onWaypointPointerDown = useCallback(
-    (wireId: WireId, internalIndex: number, e: ReactPointerEvent<SVGCircleElement>) => {
+    (
+      wireId: WireId,
+      internalIndex: number,
+      e: ReactPointerEvent<SVGCircleElement>,
+    ) => {
       try {
         e.currentTarget.setPointerCapture(e.pointerId);
       } catch {
@@ -532,13 +545,12 @@ export function WorkshopPage() {
         setWaypointPreview(null);
         if (board) {
           const snapped = snapToGrid(board.x, board.y);
-          const wire = sceneRef.current.wires.find((w) => w.id === wDrag.wireId);
+          const wire = sceneRef.current.wires.find(
+            (w) => w.id === wDrag.wireId,
+          );
           if (wire) {
             const wps = [...(wire.waypoints ?? [])];
-            if (
-              wDrag.internalIndex >= 0 &&
-              wDrag.internalIndex < wps.length
-            ) {
+            if (wDrag.internalIndex >= 0 && wDrag.internalIndex < wps.length) {
               wps[wDrag.internalIndex] = snapped;
               dispatch({
                 type: 'setWireWaypoints',
@@ -563,21 +575,40 @@ export function WorkshopPage() {
     };
   }, [dispatch]);
 
+  const rootClass =
+    workshopLayoutVariant === 'v2'
+      ? 'workshop-redesign workshop-redesign--v2'
+      : 'workshop-redesign';
+
   return (
-    <div className="app-root">
-      <header className="app-header">
-        <h1 className="app-title">{t('app.title')}</h1>
-        <div className="app-controls">
-          <Link className="app-nav-link" to="/styles">
+    <div className={rootClass}>
+      <header className="workshop-redesign-header">
+        <h1 className="workshop-redesign-title">
+          {workshopLayoutVariant === 'v2'
+            ? t('redesign.titleV2')
+            : t('redesign.titleV1')}
+        </h1>
+        <div className="workshop-redesign-header-actions">
+          <Link
+            className="workshop-redesign-pill workshop-redesign-pill--gold"
+            to="/styles"
+          >
+            <PartStylesIcon />
             {t('app.navStyles')}
           </Link>
           <button
             type="button"
-            className={testActive ? 'btn btn--on' : 'btn'}
+            className={
+              testActive
+                ? 'workshop-redesign-pill workshop-redesign-pill--gold workshop-redesign-pill--test-on'
+                : 'workshop-redesign-pill workshop-redesign-pill--gold'
+            }
             aria-pressed={testActive}
+            aria-label={testActive ? t('app.testOn') : t('app.testOff')}
             onClick={() => setTestActive((v) => !v)}
           >
-            {testActive ? t('app.testOn') : t('app.testOff')}
+            <PlayIcon />
+            {t('redesign.testLabel')}
           </button>
           <HeaderSettings
             open={settingsOpen}
@@ -591,26 +622,32 @@ export function WorkshopPage() {
               setPinLabelsVisible(v);
               persistPinLabelsVisible(v);
             }}
+            workshopLayoutVariant={workshopLayoutVariant}
+            onWorkshopLayoutVariantChange={setWorkshopLayoutVariant}
+            settingsTrigger="redesign"
           />
         </div>
       </header>
-      <div className="app-main">
+      <div className="workshop-redesign-body">
         <Palette
+          appearance="redesign"
           supplyKind={supplyKind}
           onSupplyKindChange={setSupplyKind}
           onAdd={addPart}
         />
         <section
-          className="board-section"
+          className="workshop-redesign-board-wrap"
           aria-label={t('app.boardSectionAria')}
         >
-          <svg
-            ref={svgRef}
-            className="board-svg"
-            viewBox={`0 0 ${BOARD_W} ${BOARD_H}`}
-            role="img"
-            aria-label={t('app.boardSvgAria')}
-          >
+          <div className="workshop-redesign-board workshop-redesign-board--live">
+            <svg
+              ref={svgRef}
+              className="board-svg board-svg--redesign"
+              viewBox={`0 0 ${BOARD_W} ${BOARD_H}`}
+              preserveAspectRatio="xMidYMid meet"
+              role="img"
+              aria-label={t('app.boardSvgAria')}
+            >
             <defs>
               <pattern
                 id="workshop-board-grid"
@@ -713,10 +750,11 @@ export function WorkshopPage() {
                 onRemove={removeSelected}
               />
             ) : null}
-          </svg>
-          <p className="sr-only" role="status" aria-live="polite">
-            {sim.statusMessage}
-          </p>
+            </svg>
+            <p className="sr-only" role="status" aria-live="polite">
+              {sim.statusMessage}
+            </p>
+          </div>
         </section>
       </div>
     </div>

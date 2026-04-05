@@ -1,10 +1,16 @@
 import { useEffect, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { PartHoverBarPosition, RotateHandlePosition } from './partHoverLayout';
-import {
-  persistHoverBarPosition,
-  persistRotateHandlePosition,
+import type {
+    PartHoverBarPosition,
+    RotateHandlePosition,
 } from './partHoverLayout';
+import {
+    persistHoverBarPosition,
+    persistRotateHandlePosition,
+} from './partHoverLayout';
+import type { WorkshopLayoutVariant } from './workshopLayoutVariantStorage';
+import { persistWorkshopLayoutVariant } from './workshopLayoutVariantStorage';
+import { GearIcon } from './workshopRedesignIcons';
 
 function SettingsIcon() {
   return (
@@ -32,6 +38,10 @@ export type HeaderSettingsProps = {
   readonly onRotateHandlePositionChange: (value: RotateHandlePosition) => void;
   readonly pinLabelsVisible: boolean;
   readonly onPinLabelsVisibleChange: (visible: boolean) => void;
+  readonly workshopLayoutVariant: WorkshopLayoutVariant;
+  readonly onWorkshopLayoutVariantChange: (value: WorkshopLayoutVariant) => void;
+  /** Use redesign header gear styling instead of default toolbar icon. */
+  readonly settingsTrigger?: 'default' | 'redesign';
 };
 
 export function HeaderSettings({
@@ -43,6 +53,9 @@ export function HeaderSettings({
   onRotateHandlePositionChange,
   pinLabelsVisible,
   onPinLabelsVisibleChange,
+  workshopLayoutVariant,
+  onWorkshopLayoutVariantChange,
+  settingsTrigger = 'default',
 }: HeaderSettingsProps) {
   const { t, i18n } = useTranslation();
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -50,6 +63,7 @@ export function HeaderSettings({
   const labelBarId = useId();
   const labelRotateId = useId();
   const labelPinLabelsId = useId();
+  const labelLayoutId = useId();
 
   useEffect(() => {
     if (!open) return;
@@ -65,17 +79,28 @@ export function HeaderSettings({
   }, [open, onOpenChange]);
 
   return (
-    <div className="app-settings-wrap" ref={wrapRef}>
+    <div
+      className={
+        settingsTrigger === 'redesign'
+          ? 'app-settings-wrap app-settings-wrap--redesign'
+          : 'app-settings-wrap'
+      }
+      ref={wrapRef}
+    >
       <button
         type="button"
-        className="btn btn--icon"
+        className={
+          settingsTrigger === 'redesign'
+            ? 'workshop-redesign-icon-btn'
+            : 'btn btn--icon'
+        }
         aria-label={t('settings.open')}
         aria-expanded={open}
         aria-haspopup="true"
         aria-controls={open ? 'app-settings-panel' : undefined}
         onClick={() => onOpenChange(!open)}
       >
-        <SettingsIcon />
+        {settingsTrigger === 'redesign' ? <GearIcon /> : <SettingsIcon />}
       </button>
       {open ? (
         <div
@@ -118,7 +143,10 @@ export function HeaderSettings({
               {t('lang.ar')}
             </button>
           </div>
-          <p id={labelBarId} className="app-settings-label app-settings-label--second">
+          <p
+            id={labelBarId}
+            className="app-settings-label app-settings-label--second"
+          >
             {t('settings.actionsLabel')}
           </p>
           <div
@@ -158,7 +186,10 @@ export function HeaderSettings({
               {t('settings.down')}
             </button>
           </div>
-          <p id={labelRotateId} className="app-settings-label app-settings-label--third">
+          <p
+            id={labelRotateId}
+            className="app-settings-label app-settings-label--third"
+          >
             {t('settings.rotateLabel')}
           </p>
           <div
@@ -233,6 +264,49 @@ export function HeaderSettings({
               onClick={() => onPinLabelsVisibleChange(false)}
             >
               {t('settings.pinLabelsHide')}
+            </button>
+          </div>
+          <p
+            id={labelLayoutId}
+            className="app-settings-label app-settings-label--fifth"
+          >
+            {t('settings.layoutLabel')}
+          </p>
+          <div
+            className="app-settings-segment"
+            role="group"
+            aria-labelledby={labelLayoutId}
+            dir="ltr"
+          >
+            <button
+              type="button"
+              className={
+                workshopLayoutVariant === 'v1'
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={workshopLayoutVariant === 'v1'}
+              onClick={() => {
+                onWorkshopLayoutVariantChange('v1');
+                persistWorkshopLayoutVariant('v1');
+              }}
+            >
+              {t('settings.layoutV1')}
+            </button>
+            <button
+              type="button"
+              className={
+                workshopLayoutVariant === 'v2'
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={workshopLayoutVariant === 'v2'}
+              onClick={() => {
+                onWorkshopLayoutVariantChange('v2');
+                persistWorkshopLayoutVariant('v2');
+              }}
+            >
+              {t('settings.layoutV2')}
             </button>
           </div>
         </div>

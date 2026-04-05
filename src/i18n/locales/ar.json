@@ -7,6 +7,11 @@
     "boardSectionAria": "لوحة العمل",
     "boardSvgAria": "لوحة الدائرة؛ اسحب القطع ووصّل الطرفيات."
   },
+  "redesign": {
+    "titleV1": "إعادة تصميم ورشة الكهرباء V1",
+    "titleV2": "إعادة تصميم ورشة الكهرباء V2",
+    "testLabel": "اختبار"
+  },
   "styles": {
     "title": "مختبر أنماط القطع",
     "description": "قارِن أنماط الشكل هنا؛ النمط المختار سيصبح الافتراضي في الورشة.",
@@ -98,6 +103,9 @@
     "pinLabelsLabel": "تسميات الطرفيات",
     "pinLabelsShow": "إظهار",
     "pinLabelsHide": "إخفاء",
+    "layoutLabel": "التخطيط",
+    "layoutV1": "V1",
+    "layoutV2": "V2",
     "up": "أعلى",
     "down": "أسفل",
     "left": "يسار",

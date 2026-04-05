@@ -29,6 +29,8 @@ body {
 
 #root {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-root {
@@ -93,6 +95,30 @@ body {
   color: var(--color-muted);
 }
 
+/* Part style lab: match active workshop layout (V1 / V2 redesign) */
+.workshop-redesign .styles-page-main {
+  flex: 1;
+  min-height: 0;
+  padding: 1rem 1.25rem 1.25rem;
+  max-width: 48rem;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.workshop-redesign .styles-page-lead {
+  color: var(--wr-muted);
+  line-height: 1.55;
+}
+
+.workshop-redesign--v2 .styles-page-lead {
+  color: rgba(160, 170, 180, 0.95);
+}
+
+[dir='rtl'] .styles-page-back-link .workshop-redesign-header-icon {
+  transform: scaleX(-1);
+}
+
 .app-settings-wrap {
   position: relative;
 }
@@ -138,6 +164,10 @@ body {
 }
 
 .app-settings-label--fourth {
+  margin-top: 0.65rem;
+}
+
+.app-settings-label--fifth {
   margin-top: 0.65rem;
 }
 
@@ -888,4 +918,470 @@ body {
     width: auto;
     min-width: 120px;
   }
+}
+
+/* --- Stitch: Electric Workshop Redesign V1 (reference layout) --- */
+.workshop-redesign {
+  --wr-gold: #f4c14a;
+  --wr-gold-muted: #c9a03a;
+  --wr-bg: #050505;
+  --wr-surface: #121212;
+  --wr-panel: #161616;
+  --wr-border: #3d3328;
+  --wr-board: #1e1e1e;
+  --wr-grid: rgba(244, 193, 74, 0.12);
+  --wr-text: #f5f0e8;
+  --wr-muted: #8a8075;
+
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 100vh;
+  background: var(--wr-bg);
+  color: var(--wr-text);
+}
+
+.workshop-redesign-header {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background: var(--wr-surface);
+  border-bottom: 1px solid var(--wr-border);
+}
+
+.workshop-redesign-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.workshop-redesign-header-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.workshop-redesign-back {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--wr-border);
+  color: var(--wr-muted);
+  font: inherit;
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+
+.workshop-redesign-back:hover {
+  color: var(--wr-text);
+  border-color: var(--wr-gold-muted);
+}
+
+.workshop-redesign-back:focus-visible {
+  outline: 2px solid var(--wr-gold);
+  outline-offset: 2px;
+}
+
+.workshop-redesign-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: none;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.workshop-redesign-pill--gold {
+  background: linear-gradient(180deg, #f8d060 0%, var(--wr-gold) 100%);
+  color: #1a1208;
+  box-shadow:
+    0 0 0 1px rgba(244, 193, 74, 0.35),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.workshop-redesign-pill--gold:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.workshop-redesign-pill--gold:disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
+.workshop-redesign-pill--gold.workshop-redesign-pill--test-on {
+  filter: brightness(0.97);
+  box-shadow:
+    0 0 0 2px rgba(244, 193, 74, 0.55),
+    0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+.workshop-redesign-header-icon {
+  flex-shrink: 0;
+}
+
+.workshop-redesign-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid var(--wr-border);
+  background: var(--wr-panel);
+  color: var(--wr-gold);
+  cursor: pointer;
+}
+
+.workshop-redesign-icon-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.workshop-redesign-icon-btn:focus-visible {
+  outline: 2px solid var(--wr-gold);
+  outline-offset: 2px;
+}
+
+.workshop-redesign-body {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  gap: 1rem;
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.workshop-redesign-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.workshop-redesign-card {
+  padding: 1rem 1rem 0.85rem;
+  border-radius: 14px;
+  background: var(--wr-panel);
+  border: 1px solid var(--wr-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.workshop-redesign-card-label {
+  margin: 0 0 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--wr-muted);
+}
+
+.workshop-redesign-card--parts {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.workshop-redesign-parts-heading {
+  margin-bottom: 0.5rem;
+}
+
+.workshop-redesign-supply-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.workshop-redesign-seg {
+  flex: 1;
+  padding: 0.45rem 0.5rem;
+  border-radius: 10px;
+  border: 1px solid var(--wr-border);
+  background: transparent;
+  color: var(--wr-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.workshop-redesign-seg--active {
+  color: var(--wr-gold);
+  border-color: var(--wr-gold-muted);
+  box-shadow: 0 0 12px rgba(244, 193, 74, 0.2);
+}
+
+.workshop-redesign-hint {
+  margin: 0.65rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--wr-muted);
+}
+
+.workshop-redesign-palette-long-hint {
+  margin: 0 0 0.65rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--wr-muted);
+}
+
+.workshop-redesign-part-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  overflow: auto;
+}
+
+.workshop-redesign-part-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid var(--wr-gold-muted);
+  background: rgba(244, 193, 74, 0.04);
+  color: var(--wr-text);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: start;
+  cursor: pointer;
+}
+
+.workshop-redesign-part-glyph {
+  display: flex;
+  color: var(--wr-gold);
+  flex-shrink: 0;
+}
+
+.workshop-redesign-part-name {
+  flex: 1;
+}
+
+.workshop-redesign-part-add {
+  display: flex;
+  color: var(--wr-gold);
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.workshop-redesign-board-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+
+.workshop-redesign-board {
+  flex: 1;
+  border-radius: 14px;
+  border: 1px solid var(--wr-gold-muted);
+  background-color: var(--wr-board);
+  background-image:
+    linear-gradient(var(--wr-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--wr-grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  box-shadow:
+    0 0 0 1px rgba(244, 193, 74, 0.08),
+    0 0 24px rgba(244, 193, 74, 0.06),
+    inset 0 0 80px rgba(0, 0, 0, 0.25);
+  min-height: 420px;
+}
+
+/*
+ * Live SVG: keep the same surface as the Stitch mock (CSS on .workshop-redesign-board);
+ * the SVG is an overlay with a transparent “bench” so wires/parts sit on the redesign grid.
+ */
+.workshop-redesign-board.workshop-redesign-board--live {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+
+.workshop-redesign-board--live .board-svg.board-svg--redesign {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
+  display: block;
+}
+
+.board-svg--redesign .board-bg {
+  fill: transparent;
+  stroke: transparent;
+}
+
+.board-svg--redesign .board-grid-overlay {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.board-svg--redesign .board-grid-pattern-path {
+  stroke: transparent;
+}
+
+.app-settings-wrap--redesign .app-settings-dropdown {
+  z-index: 80;
+}
+
+@media (max-width: 900px) {
+  .workshop-redesign-body {
+    flex-direction: column;
+  }
+
+  .workshop-redesign-sidebar {
+    width: 100%;
+  }
+}
+
+[dir='rtl'] .workshop-redesign-part-row {
+  text-align: right;
+}
+
+[dir='rtl'] .workshop-redesign-header-actions {
+  flex-direction: row-reverse;
+}
+
+.workshop-redesign--v2 {
+  --wr-gold: #f0c85c;
+  --wr-cyan: #5eead4;
+  --wr-bg: #030508;
+  --wr-panel-glass: rgba(18, 26, 34, 0.72);
+  --wr-edge-cyan: rgba(94, 234, 212, 0.45);
+}
+
+.workshop-redesign--v2.workshop-redesign {
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 50% 0%,
+      rgba(94, 234, 212, 0.06),
+      transparent 55%
+    ),
+    var(--wr-bg);
+}
+
+.workshop-redesign--v2 .workshop-redesign-header {
+  background: rgba(12, 16, 22, 0.85);
+  border-bottom-color: rgba(94, 234, 212, 0.25);
+  backdrop-filter: blur(10px);
+}
+
+.workshop-redesign--v2 .workshop-redesign-title {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.workshop-redesign--v2 .workshop-redesign-card {
+  background: var(--wr-panel-glass);
+  border-color: var(--wr-edge-cyan);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 0 0 1px rgba(94, 234, 212, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.workshop-redesign--v2 .workshop-redesign-card-label {
+  color: rgba(245, 240, 232, 0.65);
+}
+
+.workshop-redesign--v2
+  .workshop-redesign-seg:not(.workshop-redesign-seg--active) {
+  border-color: var(--wr-edge-cyan);
+  color: var(--wr-cyan);
+}
+
+.workshop-redesign--v2 .workshop-redesign-seg--active {
+  color: var(--wr-gold);
+  border-color: rgba(240, 200, 92, 0.85);
+  box-shadow: 0 0 18px rgba(240, 200, 92, 0.28);
+}
+
+.workshop-redesign--v2 .workshop-redesign-hint {
+  color: rgba(160, 170, 180, 0.9);
+}
+
+.workshop-redesign--v2 .workshop-redesign-part-row {
+  border-color: var(--wr-edge-cyan);
+  background: rgba(10, 16, 24, 0.45);
+}
+
+.workshop-redesign--v2 .workshop-redesign-part-glyph,
+.workshop-redesign--v2 .workshop-redesign-part-add {
+  color: var(--wr-cyan);
+}
+
+.workshop-redesign--v2 .workshop-redesign-part-name {
+  color: var(--color-text);
+}
+
+.workshop-redesign--v2 .workshop-redesign-board {
+  background-color: #0a0e12;
+  border-color: rgba(94, 234, 212, 0.35);
+  background-image:
+    radial-gradient(
+      circle at 25% 20%,
+      rgba(94, 234, 212, 0.07) 0%,
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 78% 65%,
+      rgba(240, 200, 92, 0.06) 0%,
+      transparent 40%
+    ),
+    linear-gradient(rgba(94, 234, 212, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(94, 234, 212, 0.11) 1px, transparent 1px);
+  background-size:
+    auto,
+    auto,
+    24px 24px,
+    24px 24px;
+  box-shadow:
+    0 0 40px rgba(94, 234, 212, 0.1),
+    inset 0 0 100px rgba(0, 0, 0, 0.45);
+}
+
+.workshop-redesign--v2 .workshop-redesign-palette-long-hint {
+  color: rgba(160, 170, 180, 0.9);
+}
+
+.workshop-redesign--v2 .workshop-redesign-pill--gold.workshop-redesign-pill--test-on {
+  box-shadow:
+    0 0 0 2px rgba(240, 200, 92, 0.65),
+    0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+.workshop-redesign--v2 .workshop-redesign-pill--gold {
+  background: linear-gradient(180deg, #ffe08a 0%, var(--wr-gold) 100%);
+  color: #141008;
+  box-shadow:
+    0 0 0 1px rgba(240, 200, 92, 0.4),
+    0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.workshop-redesign--v2 .workshop-redesign-icon-btn {
+  border-color: rgba(94, 234, 212, 0.35);
+  background: rgba(18, 26, 34, 0.8);
+  color: var(--wr-gold);
 }
