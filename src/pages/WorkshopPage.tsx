@@ -34,6 +34,7 @@ import {
     screenToBoard,
 } from '../ui/coords';
 import { HeaderSettings } from '../ui/HeaderSettings';
+import { useTheme } from '../ui/themeContext';
 import { isAppLocale, persistLocale } from '../ui/localeStorage';
 import { Palette } from '../ui/palette/Palette';
 import { PartStylesIcon, PlayIcon } from '../ui/workshopRedesignIcons';
@@ -70,6 +71,8 @@ const MARQUEE_CLICK_PX = 6;
 
 export function WorkshopPage() {
   const { t, i18n } = useTranslation();
+  const { preference: colorSchemePreference, setPreference: setColorSchemePreference } =
+    useTheme();
   const [scene, dispatch] = useReducer(sceneReducer, initialScene());
   const [testActive, setTestActive] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -624,6 +627,8 @@ export function WorkshopPage() {
             }}
             workshopLayoutVariant={workshopLayoutVariant}
             onWorkshopLayoutVariantChange={setWorkshopLayoutVariant}
+            colorSchemePreference={colorSchemePreference}
+            onColorSchemePreferenceChange={setColorSchemePreference}
             settingsTrigger="redesign"
           />
         </div>
@@ -640,11 +645,12 @@ export function WorkshopPage() {
           aria-label={t('app.boardSectionAria')}
         >
           <div className="workshop-redesign-board workshop-redesign-board--live">
+            {/* none: stretch viewBox to the panel so marquee/hits cover the full workspace (meet left letterboxed gaps). */}
             <svg
               ref={svgRef}
               className="board-svg board-svg--redesign"
               viewBox={`0 0 ${BOARD_W} ${BOARD_H}`}
-              preserveAspectRatio="xMidYMid meet"
+              preserveAspectRatio="none"
               role="img"
               aria-label={t('app.boardSvgAria')}
             >

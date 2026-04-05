@@ -8,6 +8,7 @@ import {
     persistHoverBarPosition,
     persistRotateHandlePosition,
 } from './partHoverLayout';
+import type { ColorSchemePreference } from './colorSchemePreferenceStorage';
 import type { WorkshopLayoutVariant } from './workshopLayoutVariantStorage';
 import { persistWorkshopLayoutVariant } from './workshopLayoutVariantStorage';
 import { GearIcon } from './workshopRedesignIcons';
@@ -40,6 +41,8 @@ export type HeaderSettingsProps = {
   readonly onPinLabelsVisibleChange: (visible: boolean) => void;
   readonly workshopLayoutVariant: WorkshopLayoutVariant;
   readonly onWorkshopLayoutVariantChange: (value: WorkshopLayoutVariant) => void;
+  readonly colorSchemePreference: ColorSchemePreference;
+  readonly onColorSchemePreferenceChange: (value: ColorSchemePreference) => void;
   /** Use redesign header gear styling instead of default toolbar icon. */
   readonly settingsTrigger?: 'default' | 'redesign';
 };
@@ -55,11 +58,14 @@ export function HeaderSettings({
   onPinLabelsVisibleChange,
   workshopLayoutVariant,
   onWorkshopLayoutVariantChange,
+  colorSchemePreference,
+  onColorSchemePreferenceChange,
   settingsTrigger = 'default',
 }: HeaderSettingsProps) {
   const { t, i18n } = useTranslation();
   const wrapRef = useRef<HTMLDivElement>(null);
   const labelLangId = useId();
+  const labelThemeId = useId();
   const labelBarId = useId();
   const labelRotateId = useId();
   const labelPinLabelsId = useId();
@@ -141,6 +147,55 @@ export function HeaderSettings({
               onClick={() => void i18n.changeLanguage('ar')}
             >
               {t('lang.ar')}
+            </button>
+          </div>
+          <p
+            id={labelThemeId}
+            className="app-settings-label app-settings-label--theme"
+          >
+            {t('settings.themeLabel')}
+          </p>
+          <div
+            className="app-settings-segment"
+            role="group"
+            aria-labelledby={labelThemeId}
+            dir="ltr"
+          >
+            <button
+              type="button"
+              className={
+                colorSchemePreference === 'light'
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={colorSchemePreference === 'light'}
+              onClick={() => onColorSchemePreferenceChange('light')}
+            >
+              {t('settings.themeLight')}
+            </button>
+            <button
+              type="button"
+              className={
+                colorSchemePreference === 'dark'
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={colorSchemePreference === 'dark'}
+              onClick={() => onColorSchemePreferenceChange('dark')}
+            >
+              {t('settings.themeDark')}
+            </button>
+            <button
+              type="button"
+              className={
+                colorSchemePreference === 'system'
+                  ? 'app-settings-segment-btn app-settings-segment-btn--active'
+                  : 'app-settings-segment-btn'
+              }
+              aria-pressed={colorSchemePreference === 'system'}
+              onClick={() => onColorSchemePreferenceChange('system')}
+            >
+              {t('settings.themeSystem')}
             </button>
           </div>
           <p

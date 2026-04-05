@@ -4,6 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Electric workshop</title>
+    <!-- Matches resolve logic in src/ui/colorSchemePreferenceStorage.ts (FOUC). -->
+    <script>
+      (function () {
+        try {
+          var k = 'electric-app-color-scheme-preference';
+          var v = localStorage.getItem(k);
+          var pref =
+            v === 'light' || v === 'dark' || v === 'system' ? v : 'system';
+          var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var eff = pref === 'system' ? (dark ? 'dark' : 'light') : pref;
+          document.documentElement.dataset.colorScheme = eff;
+          document.documentElement.style.colorScheme =
+            eff === 'dark' ? 'dark' : 'light';
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
